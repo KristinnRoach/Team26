@@ -1,0 +1,123 @@
+classDiagram
+    %% Activities
+    class MainActivity {
+        -BottomNavigationView navView
+        +onCreate(Bundle)
+        +onNavigationItemSelected(MenuItem)
+    }
+
+    class StationControlActivity {
+        -String stationId
+        +onCreate(Bundle)
+        +onControlModeChanged(ControlMode)
+        +onStateChanged(DeviceState)
+    }
+
+    %% Fragments
+    class StationListFragment {
+        -StationViewModel viewModel
+        -RecyclerView stationList
+        -SearchView searchView
+        +onCreateView()
+        +onStationSelected(String stationId)
+        +onSearch(String query)
+    }
+
+    class MapFragment {
+        -GoogleMap map
+        -LocationManager locationManager
+        -List~StationMarker~ markers
+        +onCreateView()
+        +onLocationUpdated(Location)
+        +onMarkerClicked(Marker)
+    }
+
+    class StationDetailFragment {
+        -StationViewModel viewModel
+        -String stationId
+        +onCreateView()
+        +updateStationInfo(Station)
+        +onControlButtonClicked()
+    }
+
+    %% Services
+    class StatusMonitorService {
+        -NotificationManager notificationManager
+        +onStartCommand()
+        +checkStationStatus()
+        +createNotification()
+    }
+
+    %% ViewModels
+    class StationViewModel {
+        -StationRepository repository
+        -LiveData~List~Station~~ stations
+        -LiveData~Station~ selectedStation
+        +getStations()
+        +getStationById(String)
+        +updateStationState(String, DeviceState)
+        +updateControlMode(String, ControlMode)
+    }
+
+    %% Repository
+    class StationRepository {
+        -StationApiService apiService
+        -StationDao stationDao
+        +fetchStations()
+        +getStationById(String)
+        +updateStation(Station)
+        +syncWithServer()
+    }
+
+    %% Data Classes
+    class Station {
+        -String id
+        -String name
+        -LatLng location
+        -DeviceState state
+        -ControlMode mode
+        -Boolean isOnline
+    }
+
+    %% Room Database
+    class StationDao {
+        +getAllStations() LiveData~List~Station~~
+        +getStationById(String) LiveData~Station~
+        +insert(Station)
+        +update(Station)
+    }
+
+    %% API Service
+    class StationApiService {
+        +getStations() Response~List~Station~~
+        +getStation(String) Response~Station~
+        +updateState(String, DeviceState)
+        +updateMode(String, ControlMode)
+    }
+
+    %% Enums
+    class DeviceState {
+        <<enumeration>>
+        ON
+        OFF
+    }
+
+    class ControlMode {
+        <<enumeration>>
+        MANUAL
+        ASTRO
+    }
+
+    %% Relationships
+    MainActivity --> StationListFragment : hosts
+    MainActivity --> MapFragment : hosts
+    StationControlActivity --> StationDetailFragment : hosts
+    StationListFragment --> StationViewModel : observes
+    MapFragment --> StationViewModel : observes
+    StationDetailFragment --> StationViewModel : observes
+    StationViewModel --> StationRepository : uses
+    StationRepository --> StationApiService : uses
+    StationRepository --> StationDao : uses
+    StatusMonitorService --> StationRepository : uses
+    Station -- DeviceState
+    Station -- ControlMode
