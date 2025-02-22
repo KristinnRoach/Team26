@@ -1,4 +1,4 @@
-package com.example.team26.ui.screens
+package com.example.team26.ui.screens.notification
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun StationScreen(modifier: Modifier = Modifier) {
+fun NotificationScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -22,7 +22,7 @@ fun StationScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Station Screen",
+            text = "Notifications",
             fontSize = 40.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White

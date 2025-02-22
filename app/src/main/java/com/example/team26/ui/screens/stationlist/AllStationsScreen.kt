@@ -1,4 +1,4 @@
-package com.example.team26.ui.screens
+package com.example.team26.ui.screens.stationlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SettingsScreen(modifier: Modifier = Modifier) {
+fun AllStationsScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -22,7 +22,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Settings Screen",
+            text = "All Stations Screen",
             fontSize = 40.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
