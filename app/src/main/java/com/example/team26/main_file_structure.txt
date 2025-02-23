@@ -1,0 +1,62 @@
+.
+ |-ui
+ | |-viewmodel
+ | | |-StationControlViewModel.kt
+ | |-MainActivity.kt
+ | |-navigation
+ | | |-NavItem.kt
+ | |-utils
+ | |-screens
+ | | |-settings
+ | | | |-SettingsScreen.kt
+ | | |-stationlist
+ | | | |-AllStationsScreen.kt
+ | | |-notification
+ | | | |-NotificationScreen.kt
+ | | |-map
+ | | | |-MapViewModel.kt
+ | | | |-MapScreen.kt
+ | | |-HomeScreen.kt
+ | | |-station
+ | | | |-StationScreen.kt
+ | |-components
+ | | |-Button.kt
+ | |-theme
+ | | |-Color.kt
+ | | |-Theme.kt
+ | | |-Type.kt
+ | |-MainScreen.kt
+ |-di
+ | |-AppModule.kt
+ |-project_structure.txt
+ |-data
+ | |-repository
+ | | |-StationRepositoryImpl.kt
+ | |-models
+ | | |-StationEntity.kt
+ | | |-StationState.kt
+ | | |-ControlMode.kt
+ | |-local
+ | | |-entity
+ | | | |-StationEntity.kt
+ | | |-dao
+ | | | |-StationDao.kt
+ | | |-converters
+ | | | |-ControlModeConverter.kt
+ | | | |-StationStateConverter.kt
+ | | |-PilotAppDB.kt
+ | |-remote
+ | | |-dto
+ | | | |-StationDto.kt
+ | | |-api
+ | | | |-StationApi.kt
+ |-domain
+ | |-repository
+ | | |-StationRepository.kt
+ | |-model
+ | | |-Station.kt
+ | |-usecase
+ | | |-GetStationsUseCase.txt
+ | | |-UpdateControlModeUseCase.txt
+ | | |-UpdateStationStateUseCase.txt
+ |-PilotApp.kt

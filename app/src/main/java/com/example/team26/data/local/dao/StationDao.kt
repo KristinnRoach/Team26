@@ -4,21 +4,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.team26.domain.model.Station
+import com.example.team26.data.local.entity.StationEntity
 import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface StationDao {
     @Query("SELECT * FROM stations")
-    fun getStations(): Flow<List<Station>>
+    fun getAllStations(): Flow<List<StationEntity>>
 
     @Query("SELECT * FROM stations WHERE id = :id")
-    fun getStationById(id: String): Flow<Station?>
+    fun getStationById(id: String): Flow<StationEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertStations(stationEntities: List<Station>)
+    suspend fun insertAll(stationEntities: List<StationEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStation(station: StationEntity)
 
     @Update
-    suspend fun updateStation(stationEntity: Station)
+    suspend fun updateStation(stationEntity: StationEntity)
 }

@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.team26.ui.navigation.NavItem
 import com.example.team26.ui.screens.HomeScreen
 import com.example.team26.ui.screens.notification.NotificationScreen

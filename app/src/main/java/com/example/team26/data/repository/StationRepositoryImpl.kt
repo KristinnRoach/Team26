@@ -1,21 +1,46 @@
 package com.example.team26.data.repository
 
 import com.example.team26.data.local.dao.StationDao
-// import com.example.team26.data.models.StationEntity
+import com.example.team26.data.local.entity.StationEntity
 import com.example.team26.data.remote.api.StationApi
-import com.example.team26.data.remote.model.StationDto
 import com.example.team26.domain.model.ControlMode
 import com.example.team26.domain.model.Station
-import com.example.team26.domain.model.StationState
 // import com.example.team26.data.remote.model.StateUpdateRequest
 // import com.example.team26.data.remote.model.ControlModeUpdateRequest
-import com.example.team26.domain.repository.StationRepository
+import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import retrofit2.Response
 import javax.inject.Inject
 
+@ViewModelScoped
+class StationRepository @Inject constructor(
+    private val stationDao: StationDao,
+    private val stationApi: StationApi
+) {
+    // Todo: Implement Interface (override methods)
+    fun getStations(): Flow<List<Station>> =
+        stationDao.getAllStations().map { entities ->
+            entities.map { it.toDomain() }
+        }
+
+    suspend fun refreshStations() {
+        val stationsFromApi = stationApi.getAllStations()
+        val stationEntities = stationsFromApi.map {
+            StationEntity.fromDomain(it.toDomain())
+        }
+        stationDao.insertAll(stationEntities)
+    }
+
+    suspend fun updateStationMode(stationId: String, mode: ControlMode): Station {
+        val updatedStationDto = stationApi.updateStationMode(stationId, mode.name)
+        val updatedStation = updatedStationDto.toDomain()
+        val updatedStationEntity = StationEntity.fromDomain(updatedStation)
+        stationDao.insertStation(updatedStationEntity)
+        return updatedStation
+    }
+}
+
+/*
 class StationRepositoryImpl @Inject constructor(
       private val api: StationApi,
        private val dao: StationDao,
@@ -24,7 +49,7 @@ class StationRepositoryImpl @Inject constructor(
     override suspend fun getStations(): Flow<List<Station>> {
         TODO("Not yet implemented")
     }
-    /*
+
     override suspend fun getStations(): Flow<List<Station>> = flow {
         // Emit cached data first
         emitAll(dao.getStations().map { it.toDomain() })
@@ -41,7 +66,7 @@ class StationRepositoryImpl @Inject constructor(
             // Error handling based on your requirements
         }
     }.flowOn(dispatchers.io)
- */
+
 
     override suspend fun getStationById(id: String): Flow<Station?> {
         TODO("Not yet implemented")
@@ -50,7 +75,7 @@ class StationRepositoryImpl @Inject constructor(
     override suspend fun updateStationState(id: String, state: StationState): Result<Station> {
         TODO("Not yet implemented")
     }
-    /*
+
         override suspend fun updateStationState(
                id: String,
                state: StationState
@@ -72,10 +97,12 @@ class StationRepositoryImpl @Inject constructor(
                } catch (e: Exception) {
                    Result.failure(e)
                }
-           }*/
+           }
 
     override suspend fun updateControlMode(id: String, mode: ControlMode): Result<Station> {
         TODO("Not yet implemented")
     }
 }
+
+ */
 
