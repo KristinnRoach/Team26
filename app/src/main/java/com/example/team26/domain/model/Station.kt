@@ -18,3 +18,11 @@ data class Location(
     val latitude: Double,
     val longitude: Double
 )
+
+enum class StationState {
+    ON, OFF, ERROR
+}
+
+enum class ControlMode {
+    AUTO, MANUAL, ERROR
+}
