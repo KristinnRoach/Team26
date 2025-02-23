@@ -14,5 +14,7 @@
 .cxx
 local.properties
 
+*.kidnote.txt
+
 # Keep Room schemas
 !app/schemas
