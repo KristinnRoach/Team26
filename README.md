@@ -1,11 +1,10 @@
 # pilot-bloks - Android App
 
-Android app for managing Reykjavik's "pilot-bloks" street lighting system. 
+Prototyping development repo for Android mobile user interface app 
+that manages Reykjavik's "pilot-bloks" street lighting system. 
 
-Project's current minimum SDK is for Android 10, API 29.
 
-Progress:
-
-5th of February 2025: 
- - Project setup and core configuration
-
+## Development Requirements
+- Java Development Kit (JDK) 17
+- Android Studio Flamingo (2022.2.1) or newer
+- Minimum Android API level: 29

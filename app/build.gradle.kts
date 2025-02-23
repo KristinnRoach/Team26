@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    // alias(libs.plugins.room)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -35,24 +35,24 @@ android {
         }
     }
     compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11 // should be 17 ?
-    targetCompatibility = JavaVersion.VERSION_11 // should be 17 ?
+    sourceCompatibility = JavaVersion.VERSION_17 // should be 17 ?
+    targetCompatibility = JavaVersion.VERSION_17 // should be 17 ?
     }
 
     kotlinOptions {
-        jvmTarget = "11" // should be 17 ?
+        jvmTarget = "17" // should be 17 ?
     }
 
     buildFeatures {
         compose = true
-        // buildConfig = true
+        // buildConfig = true // Uncomment if needed for build-time variables
     }
-    /*
+
     room {
         schemaDirectory("$projectDir/schemas")
     }
 
-     */
+
 
         composeOptions {
             kotlinCompilerExtensionVersion = "2.1.10"
@@ -82,8 +82,9 @@ android {
 
         }
     }
-
 }
+
+
 
 dependencies {
 // implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -109,13 +110,19 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.hilt.android)
     implementation(libs.hilt.android.testing)
-    implementation(libs.hilt.compiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    ksp(libs.hilt.compiler)
+    ksp(libs.room.compiler)
+
+
+    /*
     annotationProcessor(libs.room.compiler) {
         // exclude(group = "androidx.room", module = "room-compiler")
         exclude(group = "com.intellij", module = "annotations")
     }
+
+     */
 // implementation(libs.hilt.core)
 /*    implementation(libs.androidx.ui)
 implementation(libs.androidx.ui.graphics)
