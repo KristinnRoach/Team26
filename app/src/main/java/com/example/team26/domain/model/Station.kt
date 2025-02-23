@@ -1,7 +1,12 @@
 package com.example.team26.domain.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+
+@Entity(tableName = "stations")
 data class Station(
-    val id: String,
+    @PrimaryKey val id: String,
     val name: String,
     val location: Location,
     val state: StationState,

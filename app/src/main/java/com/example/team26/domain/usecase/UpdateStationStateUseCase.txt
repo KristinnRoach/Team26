@@ -1,5 +1,10 @@
 package com.example.team26.domain.usecase
 
+import com.example.team26.domain.model.Station
+import com.example.team26.domain.model.StationState
+import com.example.team26.domain.repository.StationRepository
+import jakarta.inject.Inject
+
 class UpdateStationStateUseCase @Inject constructor(
     private val repository: StationRepository
 ) {

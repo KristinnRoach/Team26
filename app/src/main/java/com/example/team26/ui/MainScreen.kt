@@ -20,11 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.team26.ui.navigation.NavItem
-import com.example.team26.ui.screens.AllStationsScreen
 import com.example.team26.ui.screens.HomeScreen
-import com.example.team26.ui.screens.NotificationScreen
-import com.example.team26.ui.screens.SettingsScreen
-import com.example.team26.ui.screens.StationScreen
+import com.example.team26.ui.screens.notification.NotificationScreen
+import com.example.team26.ui.screens.settings.SettingsScreen
+import com.example.team26.ui.screens.station.StationScreen
+import com.example.team26.ui.screens.stationlist.AllStationsScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
