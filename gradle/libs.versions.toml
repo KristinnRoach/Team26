@@ -33,8 +33,8 @@ retrofit = "2.11.0"
 retrofitKotlinxSerializationJson = "1.0.0"
 room = "2.7.0-beta01"
 
-#[bundles]
-#androidx-compose-ui-test = ["androidx-compose-ui-test", "androidx-compose-ui-testManifest"]
+[bundles]
+androidx-compose-ui-test = ["androidx-compose-ui-test", "androidx-compose-ui-testManifest"]
 
 [libraries]
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }

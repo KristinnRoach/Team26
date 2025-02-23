@@ -35,8 +35,8 @@ android {
         }
     }
     compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17 // should be 17 ?
-    targetCompatibility = JavaVersion.VERSION_17 // should be 17 ?
+        sourceCompatibility = JavaVersion.VERSION_17 // should be 17 ?
+        targetCompatibility = JavaVersion.VERSION_17 // should be 17 ?
     }
 
     kotlinOptions {
@@ -53,14 +53,11 @@ android {
     }
 
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = "2.1.10"
+    }
 
-        composeOptions {
-            kotlinCompilerExtensionVersion = "2.1.10"
-        }
-
-
-
-        packaging {
+    packaging {
         resources {
             // Exclude the file that was causing build conflict
             excludes += "/META-INF/gradle/incremental.annotation.processors"
@@ -84,62 +81,92 @@ android {
     }
 }
 
-
-
 dependencies {
-// implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
+    // Compose
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.hilt.navigation.compose)
-
-    implementation(libs.androidx.lifecycle.runtimeCompose)
-
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
 
-
+    // AndroidX
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.navigation.compose)
+
+    // Coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.kotlinx.coroutines.test)
+
+    // Network
+    implementation(libs.retrofit.core)
+    implementation(libs.okhttp.logging)
+
+    // Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // Permissions
+    implementation(libs.accompanist.permissions)
+
+    // Dependency Injection
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    // Testing
+    testImplementation(libs.junit4)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.hilt.android.testing)
+
+    // Android Tests
+    androidTestImplementation(libs.bundles.androidx.compose.ui.test)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+
+    // Debug
+    debugImplementation(libs.androidx.compose.ui.tooling)
+}
+
+/*
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.serialization.json)
+
     implementation(libs.retrofit.core)
     implementation(libs.okhttp.logging)
     implementation(libs.accompanist.permissions)
     implementation(libs.hilt.android)
-    implementation(libs.hilt.android.testing)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.hilt.compiler)
     ksp(libs.room.compiler)
 
-
-    /*
-    annotationProcessor(libs.room.compiler) {
-        // exclude(group = "androidx.room", module = "room-compiler")
-        exclude(group = "com.intellij", module = "annotations")
-    }
-
-     */
-// implementation(libs.hilt.core)
-/*    implementation(libs.androidx.ui)
-implementation(libs.androidx.ui.graphics)
-implementation(libs.androidx.ui.tooling.preview)
-implementation(libs.androidx.material3)
-implementation(libs.androidx.lifecycle.runtime.ktx)
-
-
-testImplementation(libs.junit)
-androidTestImplementation(libs.androidx.junit)
-androidTestImplementation(libs.androidx.espresso.core)
-*/
+    // Testing
+    testImplementation(libs.junit4) // For unit tests
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.bundles.androidx.compose.ui.test)
+    androidTestImplementation(libs.androidx.test.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-/*
-androidTestImplementation(libs.androidx.ui.test.junit4)
-debugImplementation(libs.androidx.ui.tooling)
-debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Debug builds
+    debugImplementation(libs.androidx.compose.ui.tooling)
+
+}
 
  */
-}
