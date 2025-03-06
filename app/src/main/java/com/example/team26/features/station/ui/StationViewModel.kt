@@ -87,7 +87,6 @@ class StationViewModel @Inject constructor(
     }
 
     /**
-     * THIS METHOD RESULTS IN INFINITE LOADING :: FIX IT :: DO NOT USE UNTIL FIXED
      * Refreshes station data from the repository
      */
     fun refreshStation() {
@@ -105,7 +104,7 @@ class StationViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
-        _isLoading.value = false
+        _isLoading.value = false // WHY IS THIS NEEDED? If removed gets stuck loading
     }
 
     /**

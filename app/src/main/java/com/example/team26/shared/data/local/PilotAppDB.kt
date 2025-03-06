@@ -1,4 +1,4 @@
-package com.example.team26.core.data.local
+package com.example.team26.shared.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

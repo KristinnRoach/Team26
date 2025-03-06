@@ -1,4 +1,4 @@
-package com.example.team26.core.navigation
+package com.example.team26.shared.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,9 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.team26.features.notifications.ui.NotificationScreen
-import com.example.team26.features.settings.ui.SettingsScreen
+import com.example.team26.features.user.ui.SettingsScreen
 import com.example.team26.features.station.ui.StationScreen
-import com.example.team26.features.station_list.ui.StationListScreen
+import com.example.team26.features.station.ui.StationListScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {

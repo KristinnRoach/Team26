@@ -1,4 +1,4 @@
-package com.example.team26.features.settings.ui
+package com.example.team26.features.user.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

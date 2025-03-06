@@ -1,11 +1,11 @@
-package com.example.team26.core.app
+package com.example.team26
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
-import com.example.team26.core.navigation.MainScreen
+import com.example.team26.shared.navigation.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

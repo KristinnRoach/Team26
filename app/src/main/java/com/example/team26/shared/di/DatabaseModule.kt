@@ -1,8 +1,8 @@
-package com.example.team26.core.di
+package com.example.team26.shared.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.team26.core.data.local.PilotAppDB
+import com.example.team26.shared.data.local.PilotAppDB
 import com.example.team26.features.station.data.local.dao.StationDao
 import dagger.Module
 import dagger.Provides

@@ -1,4 +1,4 @@
-package com.example.team26.core.navigation
+package com.example.team26.shared.navigation
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

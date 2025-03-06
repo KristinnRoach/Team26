@@ -1,4 +1,4 @@
-package com.example.team26.core.di
+package com.example.team26.shared.di
 
 import com.example.team26.features.station.data.remote.api.StationApi
 import dagger.Module

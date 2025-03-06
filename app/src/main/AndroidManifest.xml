@@ -20,7 +20,7 @@
         <profileable android:shell="true" /> <!-- Added while debugging -->
 
         <activity
-                android:name=".core.app.MainActivity"
+                android:name=".MainActivity"
                 android:exported="true"
                 android:theme="@style/Theme.Team26">
             <intent-filter>

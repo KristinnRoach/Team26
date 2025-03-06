@@ -1,4 +1,4 @@
-package com.example.team26.core.di
+package com.example.team26.shared.di
 
 import dagger.Module
 import dagger.hilt.InstallIn
