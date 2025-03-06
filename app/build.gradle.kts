@@ -41,10 +41,14 @@ android {
 
     kotlinOptions {
         jvmTarget = "17" // should be 17 ?
+        // freeCompilerArgs += listOf("-Xlint:deprecation")
     }
+
+    tasks.withType<JavaCompile>().configureEach { options.compilerArgs.add("-Xlint:deprecation") }
 
     buildFeatures {
         compose = true
+        viewBinding = true
         // buildConfig = true // Uncomment if needed for build-time variables
     }
 
@@ -52,10 +56,11 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
 
-
+    /* Should this be here??
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.1.10"
+        kotlinCompilerExtensionVersion = "2.1.10" // incorrect version??
     }
+    */
 
     packaging {
         resources {

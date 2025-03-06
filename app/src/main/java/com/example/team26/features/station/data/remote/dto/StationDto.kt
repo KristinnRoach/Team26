@@ -5,18 +5,21 @@ import com.example.team26.features.station.domain.model.Location
 import com.example.team26.features.station.domain.model.Station
 import com.example.team26.features.station.domain.model.StationState
 
-// import kotlinx.serialization.Serializable
-
-//@Serializable
+/**
+ * Data Transfer Object for Station data from the API
+ */
 data class StationDto(
     val id: String,
     val name: String,
     val latitude: Double,
     val longitude: Double,
-    val currentState: String,
-    val currentMode: String,
+    val currentState: String,  // "ON" or "OFF"
+    val currentMode: String,   // "ASTRO" or "MANUAL"
     val timestamp: Long
 ) {
+    /**
+     * Maps the DTO to the domain model
+     */
     fun toDomain(): Station = Station(
         id = id,
         name = name,
@@ -27,10 +30,24 @@ data class StationDto(
             else -> StationState.ERROR
         },
         controlMode = when (currentMode.uppercase()) {
-            "AUTO" -> ControlMode.AUTO
+            "ASTRO" -> ControlMode.ASTRO
             "MANUAL" -> ControlMode.MANUAL
             else -> ControlMode.ERROR
         },
         lastUpdated = timestamp
     )
 }
+
+/**
+ * DTO for sending state update requests
+ */
+data class StateUpdateRequest(
+    val state: String  // Should be "ON" or "OFF"
+)
+
+/**
+ * DTO for sending control mode update requests
+ */
+data class ControlModeUpdateRequest(
+    val astroman: String  // Should be "ASTRO" or "MANUAL"
+)

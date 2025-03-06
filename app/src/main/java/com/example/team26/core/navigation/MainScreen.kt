@@ -15,14 +15,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.example.team26.features.notifications.ui.NotificationScreen
 import com.example.team26.features.settings.ui.SettingsScreen
 import com.example.team26.features.station.ui.StationScreen
-import com.example.team26.features.station_list.ui.AllStationsScreen
+import com.example.team26.features.station_list.ui.StationListScreen
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -34,46 +38,52 @@ fun MainScreen(modifier: Modifier = Modifier) {
         NavItem("Settings", Icons.Default.Settings),
     )
 
-    var selectedIndex by remember { mutableIntStateOf(0) }
-
+    var selectedDestination by remember { mutableStateOf("home") }
+    val navController = rememberNavController()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
                 navItems.forEachIndexed { index, item ->
+                    val destination = when(index) {
+                        0 -> "home"
+                        1 -> "station"
+                        2 -> "stations_list"
+                        3 -> "notifications"
+                        4 -> "settings"
+                        else -> "home"
+                    }
+
                     NavigationBarItem(
-                        selected = selectedIndex == index,
+                        selected = selectedDestination == destination,
                         onClick = {
-                            selectedIndex = index
+                            selectedDestination = destination
+                            navController.navigate(destination) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         },
                         icon = { Icon(imageVector = item.icon, contentDescription = item.label) },
-                        label = {
-                            Text(
-                                text = item.label,
-                                maxLines = 1
-                            )
-                        }
+                        label = { Text(text = item.label, maxLines = 1) }
                     )
                 }
             }
         }
-
     ) { innerPadding ->
-        ContentScreen(
-            modifier = Modifier.padding(innerPadding),
-            selectedIndex
-        )
-    }
-}
-
-@Composable
-fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int) {
-    when (selectedIndex) {
-        0 -> HomeScreen(modifier)
-        1 -> StationScreen(modifier)
-        2 -> AllStationsScreen(modifier)
-        3 -> NotificationScreen(modifier)
-        4 -> SettingsScreen(modifier)
+        NavHost(
+            navController = navController,
+            startDestination = "home",
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable("home") { HomeScreen(modifier, navController) }    // navController passed only if the consuming screen needs it
+            composable("station") { StationScreen(modifier, navController) } // ViewModel will be automatically injected
+            composable("stations_list") { StationListScreen(modifier, navController) }
+            composable("notifications") { NotificationScreen(modifier) }
+            composable("settings") { SettingsScreen(modifier) }
+        }
     }
 }

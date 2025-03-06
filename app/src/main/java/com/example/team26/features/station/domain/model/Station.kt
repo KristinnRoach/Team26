@@ -1,11 +1,17 @@
 package com.example.team26.features.station.domain.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = "stations")
-data class Station(
+@Entity(
+    tableName = "stations",
+    indices = [
+        Index(value = ["state"]),
+        Index(value = ["controlMode"])
+    ]
+)data class Station(
     @PrimaryKey val id: String,
     val name: String,
     val location: Location,
@@ -24,5 +30,5 @@ enum class StationState {
 }
 
 enum class ControlMode {
-    AUTO, MANUAL, ERROR
+    ASTRO, MANUAL, ERROR
 }

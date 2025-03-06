@@ -1,4 +1,4 @@
-.
+src
  |-di
  | |-AppModule.kt
  |-core
