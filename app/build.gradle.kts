@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
@@ -65,24 +64,12 @@ android {
 
     packaging {
         resources {
-            // Exclude the file that was causing build conflict
-            excludes += "/META-INF/gradle/incremental.annotation.processors"
-
-            // Recommended excludes for Dagger/Hilt projects
+            // Essential META-INF excludes for Room and general Android projects
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/DEPENDENCIES"
-            excludes += "META-INF/LICENSE"
-            excludes += "META-INF/LICENSE.txt"
-            excludes += "META-INF/license.txt"
-            excludes += "META-INF/NOTICE"
-            excludes += "META-INF/NOTICE.txt"
-            excludes += "META-INF/notice.txt"
-            excludes += "META-INF/ASL2.0"
             excludes += "META-INF/*.kotlin_module"
-
-            // This is important for Dagger/Hilt
+            
+            // Needed for Room annotation processor
             pickFirsts += "META-INF/gradle/incremental.annotation.processors"
-
         }
     }
 }
@@ -96,7 +83,6 @@ dependencies {
 
     // AndroidX
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.navigation.compose)
 
@@ -115,10 +101,6 @@ dependencies {
     // Permissions
     implementation(libs.accompanist.permissions)
 
-    // Dependency Injection
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
@@ -127,7 +109,6 @@ dependencies {
     // Testing
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
-    testImplementation(libs.hilt.android.testing)
 
     // Android Tests
     androidTestImplementation(libs.bundles.androidx.compose.ui.test)

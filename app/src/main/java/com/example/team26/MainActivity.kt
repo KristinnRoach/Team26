@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.team26.shared.ui.MainScreen
-import com.example.team26.shared.viewModel.MainViewModel
-import com.example.team26.shared.viewModel.viewModelFactory
+import com.example.team26.ui.MainScreen
+import com.example.team26.viewModel.MainViewModel
+import com.example.team26.viewModel.viewModelFactory
 
 
 class MainActivity : ComponentActivity() {
