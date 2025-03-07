@@ -1,6 +1,6 @@
-package com.example.team26.features.station.data.remote.api
+package com.example.team26.shared.data.remote
 
-import com.example.team26.features.station.data.remote.dto.StationDto
+import com.example.team26.shared.data.station.StationDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -26,3 +26,5 @@ interface StationApi {
         @Body mode: String
     ): StationDto
 }
+
+

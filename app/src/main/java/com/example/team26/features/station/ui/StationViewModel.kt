@@ -3,10 +3,10 @@ package com.example.team26.features.station.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.team26.features.station.domain.model.ControlMode
-import com.example.team26.features.station.domain.model.Station
-import com.example.team26.features.station.domain.model.StationState
-import com.example.team26.features.station.domain.repository.StationRepository
+import com.example.team26.shared.domain.station.ControlMode
+import com.example.team26.shared.domain.station.StationEntity
+import com.example.team26.shared.domain.station.StationState
+import com.example.team26.shared.domain.station.StationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -173,11 +173,11 @@ class StationViewModel @Inject constructor(
      * Maps domain model to UI state
      */
     private fun mapToUiState(
-        station: Station?,
+        stationEntity: StationEntity?,
         isLoading: Boolean,
         errorMessage: String?
     ): StationDetailUiState {
-        if (station == null) {
+        if (stationEntity == null) {
             return StationDetailUiState(
                 isLoading = isLoading,
                 errorMessage = errorMessage ?: "Station not found"
@@ -186,20 +186,20 @@ class StationViewModel @Inject constructor(
 
         // Format date
         val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm:ss", Locale.getDefault())
-        val formattedDate = dateFormat.format(Date(station.lastUpdated))
+        val formattedDate = dateFormat.format(Date(stationEntity.lastUpdated))
 
         return StationDetailUiState(
             isLoading = isLoading,
             errorMessage = errorMessage,
-            stationId = station.id,
-            stationName = station.name,
-            status = station.state.name,
-            controlMode = station.controlMode.name,
+            stationId = stationEntity.id,
+            stationName = stationEntity.name,
+            status = stationEntity.state.name,
+            controlMode = stationEntity.controlMode.name,
             lastUpdated = formattedDate,
-            latitude = station.location.latitude.toString(),
-            longitude = station.location.longitude.toString(),
-            canToggleState = station.state != StationState.ERROR,
-            canToggleMode = station.controlMode != ControlMode.ERROR
+            latitude = stationEntity.location.latitude.toString(),
+            longitude = stationEntity.location.longitude.toString(),
+            canToggleState = stationEntity.state != StationState.ERROR,
+            canToggleMode = stationEntity.controlMode != ControlMode.ERROR
         )
     }
 }

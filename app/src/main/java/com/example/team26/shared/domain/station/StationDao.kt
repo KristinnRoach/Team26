@@ -1,12 +1,11 @@
-package com.example.team26.features.station.data.local.dao
+package com.example.team26.shared.domain.station
+
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.team26.features.station.data.local.entity.StationEntity
 import kotlinx.coroutines.flow.Flow
-
 
 @Dao
 interface StationDao {
@@ -25,3 +24,4 @@ interface StationDao {
     @Update
     suspend fun updateStation(stationEntity: StationEntity)
 }
+

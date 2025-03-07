@@ -1,6 +1,9 @@
 package com.example.team26.shared.di
 
-import com.example.team26.features.station.data.remote.api.StationApi
+// Just keeping for reference -kiddi
+
+/*
+import com.example.team26.shared.api.StationApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,3 +33,5 @@ object NetworkModule {
             .build()
     }
 }
+
+ */

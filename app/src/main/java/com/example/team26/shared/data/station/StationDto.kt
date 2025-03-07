@@ -1,9 +1,9 @@
-package com.example.team26.features.station.data.remote.dto
+package com.example.team26.shared.data.station
 
-import com.example.team26.features.station.domain.model.ControlMode
-import com.example.team26.features.station.domain.model.Location
-import com.example.team26.features.station.domain.model.Station
-import com.example.team26.features.station.domain.model.StationState
+import com.example.team26.shared.domain.station.ControlMode
+import com.example.team26.shared.domain.station.Location
+import com.example.team26.shared.domain.station.StationEntity
+import com.example.team26.shared.domain.station.StationState
 
 /**
  * Data Transfer Object for Station data from the API
@@ -20,7 +20,7 @@ data class StationDto(
     /**
      * Maps the DTO to the domain model
      */
-    fun toDomain(): Station = Station(
+    fun toDomain(): StationEntity = StationEntity(
         id = id,
         name = name,
         location = Location(latitude, longitude),

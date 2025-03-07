@@ -1,4 +1,4 @@
-package com.example.team26.shared.navigation
+package com.example.team26.shared.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,17 +19,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.team26.features.home.HomeScreen
 import com.example.team26.features.notifications.ui.NotificationScreen
 import com.example.team26.features.user.ui.SettingsScreen
 import com.example.team26.features.station.ui.StationScreen
 import com.example.team26.features.station.ui.StationListScreen
+import com.example.team26.shared.navigation.NavItem
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
+
     val navItems = listOf(
         NavItem("Home", Icons.Default.Home),
         NavItem("Station", Icons.Default.Build),

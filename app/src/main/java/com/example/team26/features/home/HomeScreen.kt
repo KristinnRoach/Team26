@@ -1,4 +1,4 @@
-package com.example.team26.shared.navigation
+package com.example.team26.features.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

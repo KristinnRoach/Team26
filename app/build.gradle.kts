@@ -106,6 +106,7 @@ dependencies {
 
     // Network
     implementation(libs.retrofit.core)
+    implementation(libs.converter.gson)
     implementation(libs.okhttp.logging)
 
     // Serialization

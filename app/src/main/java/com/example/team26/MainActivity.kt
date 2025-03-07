@@ -5,7 +5,35 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
-import com.example.team26.shared.navigation.MainScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.team26.shared.ui.MainScreen
+import com.example.team26.shared.viewModel.MainViewModel
+import com.example.team26.shared.viewModel.viewModelFactory
+
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            MaterialTheme {
+                val viewModel = viewModel<MainViewModel>(
+                    factory = viewModelFactory {
+                        MainViewModel(
+                            PilotApp.appModule.stationRepository,
+                            PilotApp.appModule.authRepository
+                        )
+                    }
+                )
+                MainScreen(viewModel)
+            }
+        }
+    }
+}
+
+
+
+/*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,4 +48,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+ */
+
+
 

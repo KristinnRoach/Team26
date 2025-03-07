@@ -1,4 +1,4 @@
-package com.example.team26.features.station.domain.model
+package com.example.team26.shared.domain.station
 
 import androidx.room.Entity
 import androidx.room.Index
@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
         Index(value = ["state"]),
         Index(value = ["controlMode"])
     ]
-)data class Station(
+)data class StationEntity(
     @PrimaryKey val id: String,
     val name: String,
     val location: Location,
