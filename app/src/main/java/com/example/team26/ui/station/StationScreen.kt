@@ -258,13 +258,6 @@ fun StationDetails(
                         modifier = Modifier.padding(8.dp)
                     )
 
-                    // DEBUG BUTTON
-                    Button(
-                        onClick = onToggleState,
-                        enabled = uiState.canToggleState
-                    ) {
-                        Text(text = if (uiState.status == "ON") "Turn OFF" else "Turn ON")
-                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
