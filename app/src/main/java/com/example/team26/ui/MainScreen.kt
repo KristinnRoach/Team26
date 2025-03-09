@@ -1,5 +1,6 @@
 package com.example.team26.ui
 
+import StationListScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -28,7 +29,6 @@ import com.example.team26.ui.home.HomeScreen
 import com.example.team26.ui.notifications.NotificationScreen
 import com.example.team26.ui.user.SettingsScreen
 import com.example.team26.ui.station.StationScreen
-import com.example.team26.ui.station.StationListScreen
 import com.example.team26.navigation.NavItem
 
 @Composable

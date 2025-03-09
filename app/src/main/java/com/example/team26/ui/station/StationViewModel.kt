@@ -78,6 +78,25 @@ class StationViewModel(
             initialValue = StationDetailUiState()
         )
 
+    // put in a separate viewmodel?
+    val allStationsUiState: StateFlow<List<StationDetailUiState>> = repository.getAllStations()
+        .map { stations ->
+            stations.map { station ->
+                mapToUiState(station, _isLoading.value, _error.value)
+            }
+        }
+        .catch { error ->
+            emit(listOf(StationDetailUiState(
+                isLoading = false,
+                errorMessage = "Error loading stations: ${error.message}"
+            )))
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
     /**
      * Set the station ID to view
      */
