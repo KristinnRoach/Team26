@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -30,6 +31,7 @@ import com.example.team26.ui.notifications.NotificationScreen
 import com.example.team26.ui.user.SettingsScreen
 import com.example.team26.ui.station.StationScreen
 import com.example.team26.navigation.NavItem
+import com.example.team26.ui.map.MapScreen
 
 @Composable
 fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
@@ -38,6 +40,7 @@ fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
         NavItem("Home", Icons.Default.Home),
         NavItem("Station", Icons.Default.Build),
         NavItem("List", Icons.AutoMirrored.Filled.List),
+        NavItem("Map", Icons.Default.LocationOn),
         NavItem("Notifications", Icons.Default.Notifications),
         NavItem("Settings", Icons.Default.Settings),
     )
@@ -54,8 +57,9 @@ fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
                         0 -> "home"
                         1 -> "station"
                         2 -> "stations_list"
-                        3 -> "notifications"
-                        4 -> "settings"
+                        3 -> "map"
+                        4 -> "notifications"
+                        5 -> "settings"
                         else -> "home"
                     }
 
@@ -86,6 +90,7 @@ fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
             composable("home") { HomeScreen(modifier, navController) }    // navController passed only if the consuming screen needs it
             composable("station") { StationScreen(modifier, navController) } // ViewModel will be automatically injected
             composable("stations_list") { StationListScreen(modifier, navController) }
+            composable("map") { MapScreen() }
             composable("notifications") { NotificationScreen(modifier) }
             composable("settings") { SettingsScreen(modifier) }
         }
