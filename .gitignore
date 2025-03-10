@@ -1,8 +1,7 @@
-# TODO: þarf að bæta secrets hérna inn eða sér pluginnið um það?
-
 *.iml
 .gradle
 /local.properties
+/secrets.properties
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
