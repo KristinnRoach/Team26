@@ -21,6 +21,7 @@ mapsCompose = "6.4.1"
 materialIconsExtended = "1.7.8"
 okhttp = "4.12.0"
 playServicesMaps = "19.1.0"
+ramaniMaplibre = "0.9.0"
 retrofit = "2.11.0"
 room = "2.7.0-rc01"
 secretsGradlePlugin = "2.0.1"
@@ -39,6 +40,8 @@ androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-t
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 
+maplibre-compose = { module = "dev.sargunv.maplibre-compose:maplibre-compose", version = "0.6.0" }
+
 androidx-lifecycle-runtimeCompose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidxLifecycle" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
@@ -53,6 +56,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+ramani-maplibre = { module = "org.ramani-maps:ramani-maplibre", version.ref = "ramaniMaplibre" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }

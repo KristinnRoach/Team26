@@ -12,6 +12,7 @@ import com.example.team26.viewModel.viewModelFactory
 
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

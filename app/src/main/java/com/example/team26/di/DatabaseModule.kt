@@ -1,12 +1,14 @@
 package com.example.team26.di
 
 
-
-
 import android.content.Context
 import androidx.room.Room
 import com.example.team26.data.AppDb
 import com.example.team26.domain.station.StationDao
+
+// Just keeping for reference -kiddi
+
+/*
 
 class DatabaseModule(private val context: Context) {
     private val appDb: AppDb by lazy {
@@ -21,3 +23,5 @@ class DatabaseModule(private val context: Context) {
         appDb.stationDao()
     }
 }
+
+ */

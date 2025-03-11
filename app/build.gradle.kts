@@ -57,6 +57,16 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
 
+    /*
+    productFlavors { // TODO: fix or remove
+        create("dev") {
+            // The following configuration limits the "dev" flavor to using
+            // English string resources and xxhdpi screen-density resources.
+            resourceConfigurations("en", "xxhdpi")
+        }
+    }
+     */
+
     /* Should this be here??
     composeOptions {
         kotlinCompilerExtensionVersion = "2.1.10" // incorrect version??
@@ -121,9 +131,13 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Maps
-    // Android Maps Compose composables for the Maps SDK for Android
-    implementation(libs.maps.compose)
-    implementation(libs.play.services.maps)
+    // implementation(libs.maplibre.compose)
+
+    implementation(libs.ramani.maplibre)
+
+    // Just in case the free stuff is a hassle: Android Maps Compose composables for the Maps SDK for Android
+    // implementation(libs.maps.compose)
+    // implementation(libs.play.services.maps)
 
 
     // Testing

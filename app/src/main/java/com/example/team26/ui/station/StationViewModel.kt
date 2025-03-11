@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.team26.domain.station.ControlMode
 import com.example.team26.domain.station.StationEntity
-import com.example.team26.domain.station.StationState
+import com.example.team26.domain.station.DeviceState
 import com.example.team26.domain.station.StationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -139,7 +139,7 @@ class StationViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val newState = if (currentState == "ON") StationState.OFF else StationState.ON
+                val newState = if (currentState == "ON") DeviceState.OFF else DeviceState.ON
                 repository.updateStationState(currentStationId, newState)
                 _error.value = null
 
@@ -216,7 +216,7 @@ class StationViewModel(
             lastUpdated = formattedDate,
             latitude = stationEntity.location.latitude.toString(),
             longitude = stationEntity.location.longitude.toString(),
-            canToggleState = stationEntity.state != StationState.ERROR,
+            canToggleState = stationEntity.state != DeviceState.ERROR,
             canToggleMode = stationEntity.controlMode != ControlMode.ERROR
         )
     }

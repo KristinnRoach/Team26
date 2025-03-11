@@ -31,7 +31,7 @@ import com.example.team26.ui.notifications.NotificationScreen
 import com.example.team26.ui.user.SettingsScreen
 import com.example.team26.ui.station.StationScreen
 import com.example.team26.navigation.NavItem
-import com.example.team26.ui.map.MapScreen
+import com.example.team26.ui.map.MaplibreScreen
 
 @Composable
 fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
@@ -90,7 +90,7 @@ fun MainScreen(viewModel: ViewModel, modifier: Modifier = Modifier) {
             composable("home") { HomeScreen(modifier, navController) }    // navController passed only if the consuming screen needs it
             composable("station") { StationScreen(modifier, navController) } // ViewModel will be automatically injected
             composable("stations_list") { StationListScreen(modifier, navController) }
-            composable("map") { MapScreen() }
+            composable("map") { MaplibreScreen(modifier) }
             composable("notifications") { NotificationScreen(modifier) }
             composable("settings") { SettingsScreen(modifier) }
         }

@@ -1,5 +1,5 @@
 package com.example.team26.ui.map
-
+/*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,3 +20,5 @@ fun MapScreen() {
         cameraPositionState = cameraPositionState
     )
 }
+
+ */
