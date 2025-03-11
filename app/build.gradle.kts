@@ -131,9 +131,10 @@ dependencies {
     ksp(libs.room.compiler)
 
     // Maps
-    // implementation(libs.maplibre.compose)
+    implementation(libs.maplibre.compose)
+    implementation(libs.maplibre.composeMaterial3)
 
-    implementation(libs.ramani.maplibre)
+    // implementation(libs.ramani.maplibre)
 
     // Just in case the free stuff is a hassle: Android Maps Compose composables for the Maps SDK for Android
     // implementation(libs.maps.compose)
