@@ -16,6 +16,10 @@
 local.properties
 secrets.properties
 
+# avoid redundant git push / pull issues
+.idea/AndroidProjectSystem.xml
+.kotlin/sessions/**
+
 *.kidnote.txt
 
 # Keep Room schemas
