@@ -3,7 +3,7 @@ package com.example.team26.data.station
 import com.example.team26.domain.station.ControlMode
 import com.example.team26.domain.station.Location
 import com.example.team26.domain.station.StationEntity
-import com.example.team26.domain.station.StationState
+import com.example.team26.domain.station.DeviceState
 
 /**
  * Data Transfer Object for Station data from the API
@@ -25,9 +25,9 @@ data class StationDto(
         name = name,
         location = Location(latitude, longitude),
         state = when (currentState.uppercase()) {
-            "ON" -> StationState.ON
-            "OFF" -> StationState.OFF
-            else -> StationState.ERROR
+            "ON" -> DeviceState.ON
+            "OFF" -> DeviceState.OFF
+            else -> DeviceState.ERROR
         },
         controlMode = when (currentMode.uppercase()) {
             "ASTRO" -> ControlMode.ASTRO

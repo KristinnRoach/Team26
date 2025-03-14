@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Team26</string>
+    <!-- Permission Handler Strings -->
+    <string name="permission_display">Required Permissions</string>
+    <string name="allow_permission">Grant Permissions</string>
+    <string name="permission_settings">Open Settings</string>
+    <string name="permission_required_title">Permissions Required</string>
+    <string name="rationale_msg">These permissions are needed for the app to function properly. Please grant them to continue.</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

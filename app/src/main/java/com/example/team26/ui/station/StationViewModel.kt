@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.team26.domain.station.ControlMode
 import com.example.team26.domain.station.StationEntity
-import com.example.team26.domain.station.StationState
+import com.example.team26.domain.station.DeviceState
 import com.example.team26.domain.station.StationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -44,6 +44,7 @@ class StationViewModel(
 
     // Station ID that we're currently viewing
     private val _stationId = MutableStateFlow<String?>(null)
+    val selectedStationId: StateFlow<String?> = _stationId
 
     // Error state
     private val _error = MutableStateFlow<String?>(null)
@@ -76,6 +77,25 @@ class StationViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = StationDetailUiState()
+        )
+
+    // put in a separate viewmodel?
+    val allStationsUiState: StateFlow<List<StationDetailUiState>> = repository.getAllStations()
+        .map { stations ->
+            stations.map { station ->
+                mapToUiState(station, _isLoading.value, _error.value)
+            }
+        }
+        .catch { error ->
+            emit(listOf(StationDetailUiState(
+                isLoading = false,
+                errorMessage = "Error loading stations: ${error.message}"
+            )))
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
         )
 
     /**
@@ -120,7 +140,7 @@ class StationViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.value = true
-                val newState = if (currentState == "ON") StationState.OFF else StationState.ON
+                val newState = if (currentState == "ON") DeviceState.OFF else DeviceState.ON
                 repository.updateStationState(currentStationId, newState)
                 _error.value = null
 
@@ -197,7 +217,7 @@ class StationViewModel(
             lastUpdated = formattedDate,
             latitude = stationEntity.location.latitude.toString(),
             longitude = stationEntity.location.longitude.toString(),
-            canToggleState = stationEntity.state != StationState.ERROR,
+            canToggleState = stationEntity.state != DeviceState.ERROR,
             canToggleMode = stationEntity.controlMode != ControlMode.ERROR
         )
     }

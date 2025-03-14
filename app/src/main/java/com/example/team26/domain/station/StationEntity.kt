@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
     @PrimaryKey val id: String,
     val name: String,
     val location: Location,
-    val state: StationState,
+    val state: DeviceState,
     val controlMode: ControlMode,
     val lastUpdated: Long
 )
@@ -25,7 +25,7 @@ data class Location(
     val longitude: Double
 )
 
-enum class StationState {
+enum class DeviceState {
     ON, OFF, ERROR
 }
 

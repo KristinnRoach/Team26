@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -49,18 +50,41 @@ android {
     buildFeatures {
         compose = true
         viewBinding = true
-        // buildConfig = true // Uncomment if needed for build-time variables
+        buildConfig = true
     }
 
     room {
         schemaDirectory("$projectDir/schemas")
     }
 
+    /*
+    productFlavors { // TODO: fix or remove
+        create("dev") {
+            // The following configuration limits the "dev" flavor to using
+            // English string resources and xxhdpi screen-density resources.
+            resourceConfigurations("en", "xxhdpi")
+        }
+    }
+     */
+
     /* Should this be here??
     composeOptions {
         kotlinCompilerExtensionVersion = "2.1.10" // incorrect version??
     }
     */
+
+    secrets {
+        // To add your Maps API key to this project:
+        // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+        // 2. Add this line, where YOUR_API_KEY is your API key:
+        //        MAPS_API_KEY=YOUR_API_KEY
+        propertiesFileName = "secrets.properties"
+
+        // A properties file containing default secret values. This file can be
+        // checked in version control.
+        defaultPropertiesFileName = "local.defaults.properties"
+    }
+
 
     packaging {
         resources {
@@ -105,6 +129,21 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    // Location
+    implementation(libs.play.services.location)
+
+
+    // Maps
+    implementation(libs.maplibre.compose)
+    implementation(libs.maplibre.composeMaterial3)
+
+    // implementation(libs.ramani.maplibre)
+
+    // Just in case the free stuff is a hassle: Android Maps Compose composables for the Maps SDK for Android
+    // implementation(libs.maps.compose)
+    // implementation(libs.play.services.maps)
+
 
     // Testing
     testImplementation(libs.junit4)

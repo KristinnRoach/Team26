@@ -5,7 +5,7 @@ import com.example.team26.domain.station.ControlMode
 import com.example.team26.domain.station.Location
 import com.example.team26.domain.station.StationEntity
 import com.example.team26.domain.station.StationRepository
-import com.example.team26.domain.station.StationState
+import com.example.team26.domain.station.DeviceState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,7 +60,7 @@ class MockStationRepositoryImpl: StationRepository {
     }
 
     // Simplified update method:
-    override suspend fun updateStationState(id: String, state: StationState): Result<StationEntity> {
+    override suspend fun updateStationState(id: String, state: DeviceState): Result<StationEntity> {
         val updatedStations = _stations.value.map { station ->
             if (station.id == id) {
                 station.copy(
@@ -108,49 +108,88 @@ class MockStationRepositoryImpl: StationRepository {
     }
 
     private fun createMockStations(): List<StationEntity> {
-
         Log.d("STATION_DEBUG", "Repository: createMockStations called")
 
         return listOf(
             StationEntity(
                 id = "station-1",
                 name = "Downtown Main Street",
-                location = Location(64.1466, -21.9426),
-                state = StationState.ON,
+                location = Location(64.1466, -21.9426), // Reykjavik center
+                state = DeviceState.ON,
                 controlMode = ControlMode.ASTRO,
-                lastUpdated = Date().time
+                lastUpdated = Date().time - 3600000 // 1 hour ago
             ),
             StationEntity(
                 id = "station-2",
                 name = "Harbor View",
-                location = Location(64.1509, -21.9539),
-                state = StationState.OFF,
+                location = Location(64.1509, -21.9539), // Near harbor
+                state = DeviceState.OFF,
                 controlMode = ControlMode.MANUAL,
-                lastUpdated = Date().time
+                lastUpdated = Date().time - 7200000 // 2 hours ago
             ),
             StationEntity(
                 id = "station-3",
                 name = "University Square",
-                location = Location(64.1397, -21.9558),
-                state = StationState.ON,
+                location = Location(64.1397, -21.9558), // University area
+                state = DeviceState.ON,
                 controlMode = ControlMode.ASTRO,
                 lastUpdated = Date().time
             ),
             StationEntity(
                 id = "station-4",
                 name = "Old Town East",
-                location = Location(64.1474, -21.9337),
-                state = StationState.ERROR,
+                location = Location(64.1474, -21.9337), // East side
+                state = DeviceState.ERROR,
                 controlMode = ControlMode.ERROR,
-                lastUpdated = Date().time
+                lastUpdated = Date().time - 86400000 // 24 hours ago
             ),
             StationEntity(
                 id = "station-5",
                 name = "Viðey Island",
-                location = Location(64.1646, -21.8730),
-                state = StationState.OFF,
+                location = Location(64.1646, -21.8730), // Island location
+                state = DeviceState.OFF,
                 controlMode = ControlMode.MANUAL,
+                lastUpdated = Date().time - 1800000 // 30 minutes ago
+            ),
+            StationEntity(
+                id = "station-6",
+                name = "Northern Lights Park",
+                location = Location(64.1832, -21.9124), // Northern outskirts
+                state = DeviceState.ON,
+                controlMode = ControlMode.MANUAL,
+                lastUpdated = Date().time - 300000 // 5 minutes ago
+            ),
+            StationEntity(
+                id = "station-7",
+                name = "South Bridge Terminal",
+                location = Location(64.1289, -21.8967), // Southern area
+                state = DeviceState.ON,
+                controlMode = ControlMode.ASTRO,
                 lastUpdated = Date().time
+            ),
+            StationEntity(
+                id = "station-8",
+                name = "West Market Plaza",
+                location = Location(64.1423, -22.0015), // Western district
+                state = DeviceState.OFF,
+                controlMode = ControlMode.MANUAL,
+                lastUpdated = Date().time - 10800000 // 3 hours ago
+            ),
+            StationEntity(
+                id = "station-9",
+                name = "Hilltop Observatory",
+                location = Location(64.1711, -21.9456), // Higher elevation
+                state = DeviceState.ERROR,
+                controlMode = ControlMode.MANUAL,
+                lastUpdated = Date().time - 43200000 // 12 hours ago
+            ),
+            StationEntity(
+                id = "station-10",
+                name = "Coastal Walkway",
+                location = Location(64.1587, -21.9873), // Coastline
+                state = DeviceState.ON,
+                controlMode = ControlMode.MANUAL,
+                lastUpdated = Date().time - 600000 // 10 minutes ago
             )
         )
     }
