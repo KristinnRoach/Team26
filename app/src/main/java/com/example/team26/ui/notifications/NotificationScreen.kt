@@ -16,8 +16,7 @@ import androidx.compose.ui.unit.sp
 fun NotificationScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFF1976D2)),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

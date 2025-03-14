@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.team26.ui.MainScreen
 import com.example.team26.viewModel.MainViewModel
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme {
+            MaterialTheme(darkColorScheme()) {
                 val viewModel = viewModel<MainViewModel>(
                     factory = viewModelFactory {
                         MainViewModel(
@@ -26,31 +27,8 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 )
-                MainScreen(viewModel)
+                MainScreen() // viewModel
             }
         }
     }
 }
-
-
-
-/*
-import dagger.hilt.android.AndroidEntryPoint
-
-@AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            MaterialTheme {
-                MainScreen()
-            }
-        }
-    }
-}
-
- */
-
-
-

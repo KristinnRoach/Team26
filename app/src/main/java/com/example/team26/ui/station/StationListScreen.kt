@@ -1,4 +1,8 @@
+package com.example.team26.ui.station
+
+import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,9 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.team26.PilotApp
-import com.example.team26.ui.station.SearchAndFilterBar
-import com.example.team26.ui.station.StationDetailUiState
-import com.example.team26.ui.station.StationViewModel
 import com.example.team26.viewModel.viewModelFactory
 
 enum class FilterField(val displayName: String) {
@@ -52,6 +54,8 @@ fun StationListScreen(
     val filterField = remember { mutableStateOf(FilterField.NAME) }
     val sortOrder = remember { mutableStateOf(SortOrder.ASCENDING) }
     val stations by viewModel.allStationsUiState.collectAsState()
+    val selectedStationId by viewModel.selectedStationId.collectAsState()
+
 
     val filteredStations = remember(stations, searchQuery.value, filterField.value, sortOrder.value) {
         stations
@@ -77,23 +81,38 @@ fun StationListScreen(
             sortOrder = sortOrder.value,
             onSortOrderChange = { sortOrder.value = it }
         )
-        StationList(stations = filteredStations)
+        StationList(stations = filteredStations, modifier, viewModel, navController)
     }
 }
 
 @Composable
-fun StationList(stations: List<StationDetailUiState>, modifier: Modifier = Modifier) {
+fun StationList(stations: List<StationDetailUiState>, modifier: Modifier = Modifier, viewModel: StationViewModel, navController: NavHostController) {
+    val selectAndNavigate: (String) -> Unit = { stationId ->
+        viewModel.setStationId(stationId)
+        Log.d(
+            "STATION_DEBUG",
+            "Navigating to station with id: " + viewModel.selectedStationId.value + "  |||||||  " + stationId
+        )
+        navController.navigate("station")
+    }
+
     LazyColumn(modifier = modifier) {
         items(stations, key = { it.stationId }) { station ->
-            StationItem(station = station)
+            StationItem(
+                station = station,
+                isSelected = viewModel.selectedStationId.equals(station.stationId),
+                onSelectStation = {
+                     selectAndNavigate(station.stationId)
+                }
+            )
         }
     }
 }
 
 @Composable
-fun StationItem(station: StationDetailUiState, modifier: Modifier = Modifier) {
+fun StationItem(station: StationDetailUiState, isSelected: Boolean, modifier: Modifier = Modifier, onSelectStation: () -> Unit) {
     Card(modifier = modifier.fillMaxWidth().padding(8.dp)) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(16.dp).clickable { onSelectStation() }) {
             Text(text = station.stationName, fontWeight = FontWeight.Bold)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Status indicator

@@ -130,6 +130,10 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
+    // Location
+    implementation(libs.play.services.location)
+
+
     // Maps
     implementation(libs.maplibre.compose)
     implementation(libs.maplibre.composeMaterial3)

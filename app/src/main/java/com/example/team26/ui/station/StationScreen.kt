@@ -42,6 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.team26.PilotApp
 import com.example.team26.viewModel.viewModelFactory
 import androidx.navigation.NavHostController
+import com.example.team26.viewModel.MainViewModel
 
 @Composable
 fun StationScreen(
@@ -49,21 +50,20 @@ fun StationScreen(
     navController: NavHostController,
     viewModel: StationViewModel = viewModel(
         factory = viewModelFactory {
-            StationViewModel(PilotApp.appModule.stationRepository)
+            StationViewModel(
+                PilotApp.appModule.stationRepository,
+            )
         }
-    )
-) {
-    Log.d("STATION_DEBUG", "StationScreen composing")
+    ))
+ {
 
+     val selectedStationId by viewModel.selectedStationId.collectAsState()
+     val uiState by viewModel.uiState.collectAsState()
 
-    // HAX: ensure we have a default station ID
     LaunchedEffect(Unit) {
         viewModel.refreshStation()
-        viewModel.setStationId("station-1")
+        viewModel.setStationId(selectedStationId ?: "station-1")
     }
-
-    val uiState by viewModel.uiState.collectAsState()
-    Log.d("STATION_DEBUG", "UI State collected: stationId=${uiState.stationId}, isLoading=${uiState.isLoading}")
 
     Surface(
         modifier = modifier.fillMaxSize()

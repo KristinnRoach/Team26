@@ -44,6 +44,7 @@ class StationViewModel(
 
     // Station ID that we're currently viewing
     private val _stationId = MutableStateFlow<String?>(null)
+    val selectedStationId: StateFlow<String?> = _stationId
 
     // Error state
     private val _error = MutableStateFlow<String?>(null)
