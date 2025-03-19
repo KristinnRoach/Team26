@@ -6,11 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.team26.di.AppModule
+// import androidx.lifecycle.viewmodel.compose.viewModel
+// import com.example.team26.di.AppModule
 import com.example.team26.ui.MainScreen
-import com.example.team26.viewModel.MainViewModel
-import com.example.team26.viewModel.viewModelFactory
+// import com.example.team26.viewModel.MainViewModel
+// import com.example.team26.viewModel.viewModelFactory
 
 
 class MainActivity : ComponentActivity() {
@@ -19,16 +19,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             MaterialTheme(darkColorScheme()) {
-                val viewModel = viewModel<MainViewModel>(
-                    factory = viewModelFactory {
-                        MainViewModel(
-                            AppModule.stationRepository
-                        )
-                    }
-                )
-                MainScreen() // viewModel
+                MainScreen()
             }
         }
     }
 }
+
+
+
+/* // TODO: delete or find out whether viewmodel should be created here
+val viewModel = viewModel<MainViewModel>(
+    factory = viewModelFactory {
+        MainViewModel(
+            AppModule.stationRepository
+        )
+    }
+)
+*/

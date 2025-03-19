@@ -7,11 +7,21 @@ package com.example.team26.navigation
 sealed class Route(val route: String) {
     // Main destinations
     object Home : Route("home")
-    object Station : Route("station") // Simplified for now
     object StationsList : Route("stations_list")
     object Map : Route("map")
     object Notifications : Route("notifications")
     object Settings : Route("settings")
+    // object Station : Route("station") // Simplified for now
+
+    object Station : Route("station/{stationId}") {
+        const val ARG_STATION_ID = "stationId"
+        // Static route for bottom nav
+        val defaultRoute = "station/station-1"
+
+        fun createRoute(stationId: String): String {
+            return "station/$stationId"
+        }
+    }
 
     // List of all main navigation destinations (for the bottom nav bar)
     companion object {

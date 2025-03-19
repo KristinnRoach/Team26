@@ -54,7 +54,8 @@ object NavigationHelper {
      * @param stationId The ID of the station to navigate to
      */
     fun navigateToStation(navController: NavController, stationId: String) {
-        // For now, just navigate to the basic station route
-        navController.navigate(Route.Station.route)
+        navController.navigate(Route.Station.createRoute(stationId))
+        // navController.navigate(Route.Station.route)
     }
+
 }

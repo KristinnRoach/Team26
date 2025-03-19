@@ -1,5 +1,6 @@
 package com.example.team26.ui.station
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,14 +40,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.team26.viewModel.viewModelFactory
-import androidx.navigation.NavHostController
 import com.example.team26.di.AppModule
 
 @Composable
 fun StationScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController,
-    stationId: String = "station-1",
+    stationId: String,
     viewModel: StationViewModel = viewModel(
         factory = viewModelFactory {
             StationViewModel(
@@ -59,11 +58,9 @@ fun StationScreen(
      val uiState by viewModel.uiState.collectAsState()
 
      LaunchedEffect(Unit) {
-         // TEMP HACK
-         val stationId = TempStorage.selectedStationId
-
          viewModel.setStationId(stationId)
          viewModel.refreshStation()
+         Log.d("StationScreen", "Station screen LaunchedEffect, station ID: $stationId")
      }
 
     Surface(
@@ -76,8 +73,7 @@ fun StationScreen(
             ) {
                 CircularProgressIndicator()
             }
-        } else if (uiState.errorMessage != null && uiState.stationName.isEmpty()) {
-            // Show error if we have an error and no station data
+        } else if (uiState.errorMessage != null) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center

@@ -1,6 +1,5 @@
 package com.example.team26.ui.station
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -25,16 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.example.team26.PilotApp
 import com.example.team26.di.AppModule
 import com.example.team26.navigation.NavigationHelper
 import com.example.team26.viewModel.viewModelFactory
-
-
-object TempStorage {
-    var selectedStationId: String = "station-1"
-}
-
 
 enum class FilterField(val displayName: String) {
     NAME("Name"),
@@ -62,7 +54,7 @@ fun StationListScreen(
     val filterField = remember { mutableStateOf(FilterField.NAME) }
     val sortOrder = remember { mutableStateOf(SortOrder.ASCENDING) }
     val stations by viewModel.allStationsUiState.collectAsState()
-    val selectedStationId by viewModel.selectedStationId.collectAsState()
+    // val selectedStationId by viewModel.selectedStationId.collectAsState()
 
 
     val filteredStations = remember(stations, searchQuery.value, filterField.value, sortOrder.value) {
@@ -95,20 +87,13 @@ fun StationListScreen(
 
 @Composable
 fun StationList(stations: List<StationDetailUiState>, modifier: Modifier = Modifier, viewModel: StationViewModel, navController: NavHostController) {
-
-    val selectAndNavigate: (String) -> Unit = { stationId ->
-        TempStorage.selectedStationId = stationId;
-
-        NavigationHelper.navigateTo(navController, "station")
-    }
-
     LazyColumn(modifier = modifier) {
         items(stations, key = { it.stationId }) { station ->
             StationItem(
                 station = station,
                 isSelected = viewModel.selectedStationId.equals(station.stationId),
                 onSelectStation = {
-                     selectAndNavigate(station.stationId)
+                    NavigationHelper.navigateToStation(navController, station.stationId)
                 }
             )
         }
@@ -118,8 +103,8 @@ fun StationList(stations: List<StationDetailUiState>, modifier: Modifier = Modif
 @Composable
 fun StationItem(station: StationDetailUiState, isSelected: Boolean, modifier: Modifier = Modifier, onSelectStation: () -> Unit) {
     Card(modifier = modifier.fillMaxWidth().padding(8.dp)) {
-        Column(modifier = Modifier.padding(16.dp).clickable { onSelectStation() }) {
-            Text(text = station.stationName, fontWeight = FontWeight.Bold)
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(modifier = Modifier.clickable { onSelectStation() }, text = station.stationName, fontWeight = FontWeight.Bold)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Status indicator
                 Box(

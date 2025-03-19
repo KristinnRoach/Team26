@@ -37,7 +37,7 @@ import com.example.team26.navigation.NavigationHelper
 import com.example.team26.navigation.Route
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) { // viewModel: ViewModel
+fun MainScreen(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     // Track the current route for highlighting the correct nav item
@@ -55,7 +55,14 @@ fun MainScreen(modifier: Modifier = Modifier) { // viewModel: ViewModel
                         NavigationBarItem(
                             selected = isSelected,
                             onClick = {
-                                NavigationHelper.navigateTo(navController, navItem.route.route)
+                                // TODO: Remove bottom nav to Station, redundant to have both list and details in bottom nav, just go wherever was left off
+                                if (navItem.route == Route.Station) {
+                                    // For station button, navigate to the default station
+                                    navController.navigate(Route.Station.defaultRoute)
+                                } else {
+                                    // For other buttons, use the helper
+                                    NavigationHelper.navigateTo(navController, navItem.route.route)
+                                }
                             },
                             icon = { Icon(imageVector = navItem.icon, contentDescription = navItem.label) },
                             label = { Text(text = navItem.label, maxLines = 1) }
@@ -69,13 +76,10 @@ fun MainScreen(modifier: Modifier = Modifier) { // viewModel: ViewModel
                 contentDescription = "Background image",
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .absoluteOffset(0.dp, (-30).dp) // .scale(scaleX = 1.25f, scaleY = 1.25f)
-                    // .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen },
-                    // .blur(5.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded),
-                    // contentScale = ContentScale.Crop
+                    .absoluteOffset(0.dp, (-30).dp)
            )
-        // Navigation host for screen content
 
+        // Navigation host for screen content
         NavHost(
                 navController = navController,
                 startDestination = Route.Home.route,
@@ -85,14 +89,7 @@ fun MainScreen(modifier: Modifier = Modifier) { // viewModel: ViewModel
                 HomeScreen(modifier)
             }
 
-            composable(Route.Station.route) {
-                StationScreen(
-                    modifier = modifier,
-                    navController = navController
-                )
-            }
 
-            /*
             composable(
                 route = Route.Station.route,
                 arguments = listOf(
@@ -105,12 +102,9 @@ fun MainScreen(modifier: Modifier = Modifier) { // viewModel: ViewModel
                 val stationId = backStackEntry.arguments?.getString(Route.Station.ARG_STATION_ID) ?: "station-1"
                 StationScreen(
                     modifier = modifier,
-                    navController = navController,
-                    stationId = stationId
+                    stationId = stationId  // Pass as a parameter to StationScreen
                 )
             }
-
-             */
 
 
             composable(Route.StationsList.route) {
@@ -138,15 +132,6 @@ fun MainScreen(modifier: Modifier = Modifier) { // viewModel: ViewModel
     }
     }
 }
-/*
-                composable("home") { HomeScreen(modifier) }    // navController passed only if the consuming screen needs it
-                composable("station") { StationScreen(modifier, navController) } // ViewModel will be automatically injected
-                composable("stations_list") { StationListScreen(modifier, navController) }
-                composable("map") { MaplibreScreen(modifier, navController) }
-                composable("notifications") { NotificationScreen(modifier) }
-                composable("settings") { SettingsScreen(modifier) }
-
-             */
 
 
 
