@@ -1,7 +1,6 @@
 package com.example.team26.ui.map
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.location.Location
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,14 +28,9 @@ import io.github.dellisd.spatialk.geojson.Position
 import dev.sargunv.maplibrecompose.core.CameraPosition
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.Task
 import kotlin.time.Duration.Companion.milliseconds
 import com.example.team26.utils.PermissionHandler
-import com.example.team26.utils.getCurrentLocation
 import com.example.team26.utils.getLastLocation
 
 // When testing on emulator, set useTestLocation to true and provide your test coordinates

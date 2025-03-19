@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.team26.di.AppModule
 import com.example.team26.ui.MainScreen
 import com.example.team26.viewModel.MainViewModel
 import com.example.team26.viewModel.viewModelFactory
@@ -22,8 +23,7 @@ class MainActivity : ComponentActivity() {
                 val viewModel = viewModel<MainViewModel>(
                     factory = viewModelFactory {
                         MainViewModel(
-                            PilotApp.appModule.stationRepository,
-                            PilotApp.appModule.authRepository
+                            AppModule.stationRepository
                         )
                     }
                 )
