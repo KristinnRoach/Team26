@@ -1,6 +1,5 @@
 package com.example.team26.ui.station
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,10 +38,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.team26.PilotApp
 import com.example.team26.viewModel.viewModelFactory
 import androidx.navigation.NavHostController
-import com.example.team26.viewModel.MainViewModel
+import com.example.team26.di.AppModule
 
 @Composable
 fun StationScreen(
@@ -51,7 +49,7 @@ fun StationScreen(
     viewModel: StationViewModel = viewModel(
         factory = viewModelFactory {
             StationViewModel(
-                PilotApp.appModule.stationRepository,
+                AppModule.stationRepository,
             )
         }
     ))

@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.team26.PilotApp
+import com.example.team26.di.AppModule
 import com.example.team26.viewModel.viewModelFactory
 
 enum class FilterField(val displayName: String) {
@@ -46,7 +47,7 @@ fun StationListScreen(
     navController: NavHostController,
     viewModel: StationViewModel = viewModel(
         factory = viewModelFactory {
-            StationViewModel(PilotApp.appModule.stationRepository)
+            StationViewModel(AppModule.stationRepository)
         }
     )
 ) {

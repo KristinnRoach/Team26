@@ -2,7 +2,6 @@ package com.example.team26.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.team26.domain.auth.AuthRepository
 import com.example.team26.domain.station.StationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel(
     private val stationRepository: StationRepository,
-    private val authRepository: AuthRepository
 ): ViewModel() {
 
     // Use if the selected station needs to be used outside the StationViewModel
@@ -33,9 +31,4 @@ class MainViewModel(
         }
     }
 
-    fun login() {
-        viewModelScope.launch {
-            authRepository.login("test@test.com", "test123")
-        }
-    }
 }
