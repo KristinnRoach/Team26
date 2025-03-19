@@ -42,7 +42,7 @@ class StationViewModel(
     private val repository: StationRepository
 ) : ViewModel() {
 
-    // Station ID that we're currently viewing
+    // Currently selected station ID
     private val _stationId = MutableStateFlow<String?>(null)
     val selectedStationId: StateFlow<String?> = _stationId
 

@@ -46,6 +46,7 @@ import com.example.team26.di.AppModule
 fun StationScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
+    stationId: String = "station-1",
     viewModel: StationViewModel = viewModel(
         factory = viewModelFactory {
             StationViewModel(
@@ -55,13 +56,15 @@ fun StationScreen(
     ))
  {
 
-     val selectedStationId by viewModel.selectedStationId.collectAsState()
      val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.refreshStation()
-        viewModel.setStationId(selectedStationId ?: "station-1")
-    }
+     LaunchedEffect(Unit) {
+         // TEMP HACK
+         val stationId = TempStorage.selectedStationId
+
+         viewModel.setStationId(stationId)
+         viewModel.refreshStation()
+     }
 
     Surface(
         modifier = modifier.fillMaxSize()

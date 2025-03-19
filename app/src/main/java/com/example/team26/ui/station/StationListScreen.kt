@@ -27,7 +27,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.team26.PilotApp
 import com.example.team26.di.AppModule
+import com.example.team26.navigation.NavigationHelper
 import com.example.team26.viewModel.viewModelFactory
+
+
+object TempStorage {
+    var selectedStationId: String = "station-1"
+}
+
 
 enum class FilterField(val displayName: String) {
     NAME("Name"),
@@ -88,13 +95,11 @@ fun StationListScreen(
 
 @Composable
 fun StationList(stations: List<StationDetailUiState>, modifier: Modifier = Modifier, viewModel: StationViewModel, navController: NavHostController) {
+
     val selectAndNavigate: (String) -> Unit = { stationId ->
-        viewModel.setStationId(stationId)
-        Log.d(
-            "STATION_DEBUG",
-            "Navigating to station with id: " + viewModel.selectedStationId.value + "  |||||||  " + stationId
-        )
-        navController.navigate("station")
+        TempStorage.selectedStationId = stationId;
+
+        NavigationHelper.navigateTo(navController, "station")
     }
 
     LazyColumn(modifier = modifier) {
