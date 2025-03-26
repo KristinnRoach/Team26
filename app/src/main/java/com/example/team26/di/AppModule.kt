@@ -1,5 +1,6 @@
 package com.example.team26.di
 
+import com.example.team26.data.station.ApiStationRepositoryImpl
 import com.example.team26.data.station.MockStationRepositoryImpl
 import com.example.team26.domain.station.StationRepository
 
@@ -7,7 +8,7 @@ import com.example.team26.domain.station.StationRepository
 
 // Simplified version without DI
 object AppModule {
-    val stationRepository: StationRepository = MockStationRepositoryImpl()
+    val stationRepository: StationRepository = ApiStationRepositoryImpl()
 }
 
 /*
