@@ -1,7 +1,7 @@
 package com.example.team26.domain.station
 
 data class ApiStationEntity(
-    val id: String,
+    val id: String?,
     val hs: String?,
     val hverfi: String?,
     val tsip: String?,

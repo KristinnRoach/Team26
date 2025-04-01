@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,7 +30,7 @@ fun SearchAndFilterBar(
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { showFilterMenu = true }) {
-            Icon(Icons.Default.ArrowDropDown, contentDescription = "Filter")
+            Icon(Icons.Filled.FilterList, contentDescription = "Filter")
         }
         TextField(
             value = searchQuery,

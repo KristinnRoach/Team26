@@ -1,6 +1,7 @@
 package com.example.team26.data.remote
 
 import com.example.team26.domain.station.ApiStationEntity
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -17,11 +18,11 @@ interface StationApiService {
     suspend fun setDeviceState(
         @Path("identifier") identifier: String,
         @Body state: Map<String, String>
-    ): ApiStationEntity
+    ): Response<Void>
 
     @POST("devices/{identifier}/astroman")
     suspend fun setDeviceMode(
         @Path("identifier") identifier: String,
         @Body mode: Map<String, String>
-    ): ApiStationEntity
+    ): Response<Void>
 }

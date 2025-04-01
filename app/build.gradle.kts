@@ -34,18 +34,20 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17 // should be 17 ?
-        targetCompatibility = JavaVersion.VERSION_17 // should be 17 ?
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "17" // should be 17 ?
-        // freeCompilerArgs += listOf("-Xlint:deprecation")
+        jvmTarget = "17"
     }
 
-    // for debugging versions in generated build files
-    tasks.withType<JavaCompile>().configureEach { options.compilerArgs.add("-Xlint:deprecation") }
+    // Debugging deprecations
+    tasks.withType<JavaCompile>().configureEach {
+        options.compilerArgs.add("-Xlint:deprecation")
+    }
 
     buildFeatures {
         compose = true
@@ -60,39 +62,22 @@ android {
     /*
     productFlavors { // TODO: fix or remove
         create("dev") {
-            // The following configuration limits the "dev" flavor to using
-            // English string resources and xxhdpi screen-density resources.
             resourceConfigurations("en", "xxhdpi")
         }
-    }
-     */
-
-    /* Should this be here??
-    composeOptions {
-        kotlinCompilerExtensionVersion = "2.1.10" // incorrect version??
     }
     */
 
     secrets {
-        // To add your Maps API key to this project:
-        // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
-        // 2. Add this line, where YOUR_API_KEY is your API key:
-        //        MAPS_API_KEY=YOUR_API_KEY
         propertiesFileName = "secrets.properties"
-
-        // A properties file containing default secret values. This file can be
-        // checked in version control.
         defaultPropertiesFileName = "local.defaults.properties"
     }
 
-
     packaging {
         resources {
-            // Essential META-INF excludes for Room and general Android projects
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/*.kotlin_module"
-            
-            // Needed for Room annotation processor
+            excludes += listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "META-INF/*.kotlin_module"
+            )
             pickFirsts += "META-INF/gradle/incremental.annotation.processors"
         }
     }
@@ -107,6 +92,7 @@ dependencies {
 
     // AndroidX
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.work)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.navigation.compose)
 
@@ -133,21 +119,20 @@ dependencies {
     // Location
     implementation(libs.play.services.location)
 
-
     // Maps
     implementation(libs.maplibre.compose)
     implementation(libs.maplibre.composeMaterial3)
-
-    // implementation(libs.ramani.maplibre)
-
-    // Just in case the free stuff is a hassle: Android Maps Compose composables for the Maps SDK for Android
-    // implementation(libs.maps.compose)
-    // implementation(libs.play.services.maps)
-
+//    implementation(libs.maplibre.android.sdk)
+//    implementation(libs.maplibre.composeExtensions)
+//    implementation(libs.maplibre.composeGeojson)
+//    implementation(libs.maplibre.composeExperimental)
+//    implementation(libs.spatialk.geojson)
 
     // Testing
     testImplementation(libs.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
+
+    implementation(libs.androidx.compose.material.icons.extended)
 
     // Android Tests
     androidTestImplementation(libs.bundles.androidx.compose.ui.test)

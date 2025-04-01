@@ -1,56 +1,81 @@
 package com.example.team26.di
 
-import com.example.team26.data.station.ApiStationRepositoryImpl
-import com.example.team26.data.station.MockStationRepositoryImpl
-import com.example.team26.domain.station.StationRepository
-
-
-
-// Simplified version without DI
-object AppModule {
-    val stationRepository: StationRepository = ApiStationRepositoryImpl()
-}
-
-/*
-// Over complicated version with DI - ignore for now
-
 import android.content.Context
-import com.example.team26.domain.auth.AuthRepository
-import com.example.team26.data.auth.AuthApi
-import com.example.team26.data.auth.AuthRepositoryImpl
-import com.example.team26.data.station.MockStationRepositoryImpl
+import androidx.room.Room
+import com.example.team26.data.AppDb
+import com.example.team26.data.preferences.NotificationPreferenceManager
+import com.example.team26.data.remote.StationApiService
+import com.example.team26.data.station.ApiStationRepositoryImpl
+import com.example.team26.domain.notification.NotificationDao
+import com.example.team26.domain.station.StationDao
 import com.example.team26.domain.station.StationRepository
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.create
 import retrofit2.converter.gson.GsonConverterFactory
 
+object AppModule {
 
-interface AppModule {
-    // val stationAPI: StationApi // later
-    val stationRepository: StationRepository
-    val authApi: AuthApi
-    val authRepository: AuthRepository
-}
+    private var dbInstance: AppDb? = null
+    private var preferenceManagerInstance: NotificationPreferenceManager? = null
 
-class AppModuleImpl(
-    private val appContext: Context
-): AppModule {
-
-    override val stationRepository: StationRepository by lazy {
-        MockStationRepositoryImpl()
+    fun initialize(context: Context) {
+        if (dbInstance == null) {
+            dbInstance = Room.databaseBuilder(
+                context.applicationContext,
+                AppDb::class.java, "pilot-app-db"
+            )
+                .fallbackToDestructiveMigration()
+                .build()
+        }
+        if (preferenceManagerInstance == null) {
+            preferenceManagerInstance = NotificationPreferenceManager(context.applicationContext)
+        }
     }
 
-    override val authApi: AuthApi by lazy {
+    private val database: AppDb
+        get() = dbInstance ?: throw IllegalStateException("AppModule not initialized.")
+
+    val notificationPreferenceManager: NotificationPreferenceManager
+        get() = preferenceManagerInstance ?: throw IllegalStateException("AppModule not initialized.")
+
+    private const val BASE_URL = "http://10.0.2.2:5053/"
+    private const val CLIENT_ID = ""
+    private const val CLIENT_SECRET = ""
+
+    private val okHttpClient: OkHttpClient by lazy {
+        OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .addHeader("CF-Access-Client-Id", CLIENT_ID)
+                    .addHeader("CF-Access-Client-Secret", CLIENT_SECRET)
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
+    }
+
+    private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl("https://my-url.com")
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create()
     }
-    override val authRepository: AuthRepository by lazy {
-        AuthRepositoryImpl(authApi)
+
+    val stationApiService: StationApiService by lazy {
+        retrofit.create(StationApiService::class.java)
+    }
+
+    // Repository
+    val stationRepository: StationRepository by lazy {
+        ApiStationRepositoryImpl(stationApiService)
+    }
+
+    val notificationDao: NotificationDao by lazy {
+        database.notificationDao()
+    }
+
+    val stationDao: StationDao by lazy {
+        database.stationDao()
     }
 }
-*/
-
-

@@ -1,8 +1,13 @@
 package com.example.team26.ui.station
 
+import android.net.http.HttpException
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresExtension
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.team26.domain.notification.NotificationComparator.toLastKnownStateEntity
+import com.example.team26.domain.notification.NotificationDao
 import com.example.team26.domain.station.ControlMode
 import com.example.team26.domain.station.StationEntity
 import com.example.team26.domain.station.DeviceState
@@ -10,17 +15,19 @@ import com.example.team26.domain.station.StationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/**
- * UI state representation for the Station detail screen
- */
 data class StationDetailUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -35,62 +42,48 @@ data class StationDetailUiState(
     val canToggleMode: Boolean = false
 )
 
-/**
- * ViewModel for displaying and controlling a single station
- */
 class StationViewModel(
-    private val repository: StationRepository
+    private val repository: StationRepository,
+    private val notificationDao: NotificationDao
 ) : ViewModel() {
 
-    // Station ID that we're currently viewing
     private val _stationId = MutableStateFlow<String?>(null)
     val selectedStationId: StateFlow<String?> = _stationId
 
-    // Error state
     private val _error = MutableStateFlow<String?>(null)
-
-    // Loading state
     private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    // Combine all states into a single UI state
-    val uiState: StateFlow<StationDetailUiState> = repository.getAllStations()
-        .map { stations ->
-            val stationId = _stationId.value
-            val station = if (stationId != null) {
-                stations.find { it.id == stationId }
-            } else {
-                // If no ID is selected, just use the first station
-                stations.firstOrNull()
-            }
+    private val _isApiReachable = MutableStateFlow(true)
+    val isApiReachable: StateFlow<Boolean> = _isApiReachable.asStateFlow()
 
-            mapToUiState(station, _isLoading.value, _error.value)
-        }
+    val uiState: StateFlow<StationDetailUiState> = combine(
+        _stationId,
+        repository.getAllStations(),
+        _isLoading,
+        _error,
+        _isApiReachable
+    ) { stationId, stations, isLoading, errorMsg, isApiReachable ->
+        val station = stationId?.let { id -> stations.find { it.id == id } }
+        val combinedErrorMsg = if (!isApiReachable) "API unreachable. Using cached data." else errorMsg
+        mapToUiState(station, isLoading, combinedErrorMsg, isApiReachable)
+    }
         .catch { error ->
-            emit(
-                StationDetailUiState(
-                isLoading = false,
-                errorMessage = "Error loading station: ${error.message}"
-            )
-            )
+            val finalErrorMsg = if (!_isApiReachable.value) "API unreachable." else "Failed to load: ${error.message}"
+            emit(StationDetailUiState(isLoading = false, stationId = _stationId.value ?: "", errorMessage = finalErrorMsg))
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = StationDetailUiState()
+            initialValue = StationDetailUiState(isLoading = true)
         )
 
-    // put in a separate viewmodel?
     val allStationsUiState: StateFlow<List<StationDetailUiState>> = repository.getAllStations()
         .map { stations ->
-            stations.map { station ->
-                mapToUiState(station, _isLoading.value, _error.value)
-            }
+            stations.map { station -> mapToUiState(station, false, null, _isApiReachable.value) }
         }
         .catch { error ->
-            emit(listOf(StationDetailUiState(
-                isLoading = false,
-                errorMessage = "Error loading stations: ${error.message}"
-            )))
+            emit(listOf(StationDetailUiState(isLoading = false, errorMessage = "Error loading list: ${error.message}")))
         }
         .stateIn(
             scope = viewModelScope,
@@ -98,117 +91,173 @@ class StationViewModel(
             initialValue = emptyList()
         )
 
-    /**
-     * Set the station ID to view
-     */
-    fun setStationId(id: String) {
-        _stationId.value = id
+    fun setApiReachable(reachable: Boolean) {
+        if (_isApiReachable.value != reachable) {
+            _isApiReachable.value = reachable
+        }
     }
 
-    /**
-     * Refreshes station data from the repository
-     */
-    fun refreshStation() {
-        Log.d("STATION_DEBUG", "Starting refreshStation, setting isLoading=true")
-        _isLoading.value = true
+    fun setStationId(id: String?) {
+        if (_stationId.value != id) {
+            _stationId.value = id
+            _error.value = null
+        }
+    }
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    fun refreshStation() {
+        val idToRefresh = _stationId.value
+        _isLoading.value = true
+        _error.value = null
         viewModelScope.launch {
             try {
                 repository.refreshStations()
-                _error.value = null
+                setApiReachable(true)
             } catch (e: Exception) {
-                _error.value = "Failed to refresh: ${e.message}"
+                val isConnectivityError = e is ConnectException || e is UnknownHostException || e is SocketTimeoutException || e is HttpException
+                if (isConnectivityError) {
+                    setApiReachable(false)
+                    _error.value = "API Unreachable"
+                } else {
+                    setApiReachable(true)
+                    _error.value = "Refresh failed: ${e.message}"
+                }
             } finally {
-                Log.d("STATION_DEBUG", "Setting isLoading to false after refreshStation")
                 _isLoading.value = false
             }
         }
-        _isLoading.value = false // WHY IS THIS NEEDED? If removed gets stuck loading
     }
 
-    /**
-     * Toggle the station's power state (ON/OFF)
-     */
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun toggleStationState() {
         val currentStationId = _stationId.value ?: return
-        val currentState = uiState.value.status
+        if (!_isApiReachable.value) {
+            _error.value = "API unreachable."
+            return
+        }
 
-        // Debug
-        Log.d("MyTag", "Toggle state requested: Current ID=$currentStationId, Current state=$currentState")
+        val currentState = DeviceState.entries.find { it.name == uiState.value.status } ?: DeviceState.ERROR
+        if (currentState == DeviceState.ERROR || !uiState.value.canToggleState) {
+            _error.value = "Cannot toggle state now."
+            return
+        }
 
-
+        _isLoading.value = true
+        _error.value = null
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-                val newState = if (currentState == "ON") DeviceState.OFF else DeviceState.ON
-                repository.updateStationState(currentStationId, newState)
-                _error.value = null
-
-                // Debug
-                Log.d("MyTag", "Toggle state completed: New state=${newState.name}")
+                val newState = if (currentState == DeviceState.ON) DeviceState.OFF else DeviceState.ON
+                val result = repository.updateStationState(currentStationId, newState)
+                result.onSuccess { updatedStation ->
+                    setApiReachable(true)
+                    try {
+                        notificationDao.insertLastKnownStates(listOf(updatedStation.toLastKnownStateEntity()))
+                    } catch (dbException: Exception) {
+                        Log.e("StationViewModel", "DB update failed", dbException)
+                    }
+                }.onFailure { e ->
+                    val isConnectivityError = e is ConnectException || e is UnknownHostException || e is SocketTimeoutException || e is HttpException || e.cause is ConnectException
+                    if (isConnectivityError) {
+                        setApiReachable(false)
+                        _error.value = "API Unreachable."
+                    } else {
+                        setApiReachable(true)
+                        _error.value = "Failed to update: ${e.message}"
+                    }
+                }
             } catch (e: Exception) {
-                _error.value = "Failed to update state: ${e.message}"
+                val isConnectivityError = e is ConnectException || e is UnknownHostException || e is SocketTimeoutException || e is HttpException
+                if (isConnectivityError) {
+                    setApiReachable(false)
+                    _error.value = "API Unreachable."
+                } else {
+                    setApiReachable(true)
+                    _error.value = "Operation failed: ${e.message}"
+                }
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    /**
-     * Toggle the station's control mode (ASTRO/MANUAL)
-     */
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     fun toggleControlMode() {
         val currentStationId = _stationId.value ?: return
-        val currentMode = uiState.value.controlMode
+        if (!_isApiReachable.value) {
+            _error.value = "API unreachable."
+            return
+        }
 
-        // Debug
-        Log.d("MyTag", "Toggle mode requested: Current ID=$currentStationId, Current mode=$currentMode")
+        val currentMode = ControlMode.entries.find { it.name == uiState.value.controlMode } ?: ControlMode.ERROR
+        if (currentMode == ControlMode.ERROR || !uiState.value.canToggleMode) {
+            _error.value = "Cannot toggle mode now."
+            return
+        }
 
-        val newMode = if (currentMode == "ASTRO") ControlMode.MANUAL else ControlMode.ASTRO
-
+        val newMode = if (currentMode == ControlMode.ASTRO) ControlMode.MANUAL else ControlMode.ASTRO
+        _isLoading.value = true
+        _error.value = null
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-
-                repository.updateControlMode(currentStationId, newMode)
-                _error.value = null
-
-                // Debug
-                Log.d("MyTag", "Toggle mode completed: New mode=${newMode.name}")
+                val result = repository.updateControlMode(currentStationId, newMode)
+                result.onSuccess { updatedStation ->
+                    setApiReachable(true)
+                    try {
+                        notificationDao.insertLastKnownStates(listOf(updatedStation.toLastKnownStateEntity()))
+                    } catch (dbException: Exception) {
+                        Log.e("StationViewModel", "DB update failed", dbException)
+                    }
+                }.onFailure { e ->
+                    val isConnectivityError = e is ConnectException || e is UnknownHostException || e is SocketTimeoutException || e is HttpException || e.cause is ConnectException
+                    if (isConnectivityError) {
+                        setApiReachable(false)
+                        _error.value = "API Unreachable."
+                    } else {
+                        setApiReachable(true)
+                        _error.value = "Failed to update: ${e.message}"
+                    }
+                }
             } catch (e: Exception) {
-                _error.value = "Failed to update mode: ${e.message}"
-
-                // Debug
-                Log.e("MyTag", "Toggle mode failed: ${e.message}")
+                val isConnectivityError = e is ConnectException || e is UnknownHostException || e is SocketTimeoutException || e is HttpException
+                if (isConnectivityError) {
+                    setApiReachable(false)
+                    _error.value = "API Unreachable."
+                } else {
+                    setApiReachable(true)
+                    _error.value = "Operation failed: ${e.message}"
+                }
             } finally {
-                Log.d("STATION_DEBUG", "Setting isLoading to false after control mode toggle")
-
                 _isLoading.value = false
             }
         }
     }
 
-    /**
-     * Maps domain model to UI state
-     */
     private fun mapToUiState(
         stationEntity: StationEntity?,
         isLoading: Boolean,
-        errorMessage: String?
+        errorMessage: String?,
+        isApiReachable: Boolean
     ): StationDetailUiState {
         if (stationEntity == null) {
+            val finalError = if (!isApiReachable) "API unreachable." else errorMessage ?: if (_stationId.value != null && !isLoading) "Station not found" else null
             return StationDetailUiState(
-                isLoading = isLoading,
-                errorMessage = errorMessage ?: "Station not found"
+                isLoading = isLoading && isApiReachable,
+                errorMessage = finalError,
+                stationId = _stationId.value ?: ""
             )
         }
 
-        // Format date
         val dateFormat = SimpleDateFormat("MMM dd, yyyy HH:mm:ss", Locale.getDefault())
-        val formattedDate = dateFormat.format(Date(stationEntity.lastUpdated))
+        val formattedDate = try {
+            dateFormat.format(Date(stationEntity.lastUpdated))
+        } catch (e: Exception) { "Invalid date" }
+
+        val isManualMode = stationEntity.controlMode == ControlMode.MANUAL
+        val isNotInError = stationEntity.state != DeviceState.ERROR && stationEntity.controlMode != ControlMode.ERROR
+        val enableControls = isApiReachable && !isLoading && isNotInError
 
         return StationDetailUiState(
-            isLoading = isLoading,
+            isLoading = isLoading && isApiReachable,
             errorMessage = errorMessage,
             stationId = stationEntity.id,
             stationName = stationEntity.name,
@@ -217,58 +266,8 @@ class StationViewModel(
             lastUpdated = formattedDate,
             latitude = stationEntity.location.latitude.toString(),
             longitude = stationEntity.location.longitude.toString(),
-            canToggleState = stationEntity.state != DeviceState.ERROR,
-            canToggleMode = stationEntity.controlMode != ControlMode.ERROR
+            canToggleState = enableControls && isManualMode,
+            canToggleMode = enableControls
         )
     }
 }
-
-/*
-BEFORE MOCKING: gamalt fyrir neðan - Henda þegar komið í gagnið
-
-package com.example.team26.features.station.ui
-
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject // todo: check if this is needed with hilt
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.team26.features.station.data.repository.StationRepository
-import com.example.team26.features.station.domain.model.Station
-import com.example.team26.features.station.domain.model.ControlMode
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-
-@HiltViewModel
-class StationViewModel @Inject constructor(
-    private val stationRepository: StationRepository
-) : ViewModel() {
-    private val _stations = MutableStateFlow<List<Station>>(emptyList())
-    val stations: StateFlow<List<Station>> = _stations
-
-    init {
-        fetchStations()
-    }
-
-    private fun fetchStations() {
-        viewModelScope.launch {
-            stationRepository.getStations().collect { stationList ->
-                _stations.value = stationList
-            }
-        }
-    }
-
-    fun updateStationMode(stationId: String, mode: ControlMode) {
-        viewModelScope.launch {
-            stationRepository.updateStationMode(stationId, mode)
-        }
-    }
-
-    fun refreshStations() {
-        viewModelScope.launch {
-            stationRepository.refreshStations()
-        }
-    }
-}
-
- */

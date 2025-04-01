@@ -2,118 +2,127 @@ package com.example.team26.data.station
 
 import android.util.Log
 import com.example.team26.data.converters.StationConverter
-import com.example.team26.domain.station.ApiStationEntity
+import com.example.team26.data.remote.StationApiService
 import com.example.team26.domain.station.ControlMode
 import com.example.team26.domain.station.StationEntity
 import com.example.team26.domain.station.StationRepository
 import com.example.team26.domain.station.DeviceState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
-private const val BASE_URL = "http://10.0.2.2:5053/"
-private const val CLIENT_ID = ""
-private const val CLIENT_SECRET = ""
+class ApiStationRepositoryImpl(private val apiService: StationApiService) : StationRepository {
 
-interface StationApiService {
-    @GET("devices")
-    suspend fun getAllDevices(): List<ApiStationEntity>
+    private val _stations = MutableStateFlow<List<StationEntity>>(emptyList())
+    private val stations: StateFlow<List<StationEntity>> = _stations.asStateFlow()
 
-    @GET("devices/{identifier}")
-    suspend fun getDeviceByIdentifier(@Path("identifier") identifier: String): ApiStationEntity
+    private val repositoryScope = CoroutineScope(Dispatchers.IO)
 
-    @POST("devices/{identifier}/state")
-    suspend fun setDeviceState(
-        @Path("identifier") identifier: String,
-        @Body state: Map<String, String>
-    ): ApiStationEntity
-
-    @POST("devices/{identifier}/astroman")
-    suspend fun setDeviceMode(
-        @Path("identifier") identifier: String,
-        @Body mode: Map<String, String>
-    ): ApiStationEntity
-}
-
-private val retrofit = Retrofit.Builder()
-    .baseUrl(BASE_URL)
-    .addConverterFactory(GsonConverterFactory.create())
-    .client(
-        OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                val request = chain.request().newBuilder()
-                    .addHeader("CF-Access-Client-Id", CLIENT_ID)
-                    .addHeader("CF-Access-Client-Secret", CLIENT_SECRET)
-                    .build()
-                chain.proceed(request)
-            }
-            .build()
-    )
-    .build()
-
-private val apiService: StationApiService = retrofit.create(StationApiService::class.java)
-
-class ApiStationRepositoryImpl : StationRepository {
-
-    override suspend fun refreshStations() {
-        Log.d("STATION_DEBUG", "Repository: refreshStations called (no-op)")
-    }
-
-    override fun getAllStations(): Flow<List<StationEntity>> = flow {
-        try {
-            val apiStations = apiService.getAllDevices()
-            val stations = apiStations.map { StationConverter.toStationEntity(it) }
-            Log.d("STATION_DEBUG", "Repository: getAllStations fetched ${stations.size} stations")
-            emit(stations)
-        } catch (e: Exception) {
-            Log.e("STATION_DEBUG", "Repository: getAllStations failed", e)
-            emit(emptyList())
+    init {
+        repositoryScope.launch {
+            refreshStationsInternal()
         }
     }
 
+    private suspend fun refreshStationsInternal(): Result<Unit> {
+        return try {
+            Log.d("STATION_DEBUG", "Repository: Refreshing stations from API...")
+            val apiStations = apiService.getAllDevices()
+            val newStations = apiStations.map { StationConverter.toStationEntity(it) }
+            _stations.value = newStations
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("STATION_DEBUG", "Repository: Failed to refresh stations", e)
+
+            val isConnectivityError = e is ConnectException ||
+                    e is UnknownHostException ||
+                    e is SocketTimeoutException ||
+                    e is HttpException
+
+            if (isConnectivityError) {
+                Log.w("STATION_DEBUG", "API connectivity error during refresh. Clearing station cache.")
+                _stations.value = emptyList()
+            }
+
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun refreshStations() {
+        withContext(Dispatchers.IO) {
+            refreshStationsInternal()
+        }
+    }
+
+    override fun getAllStations(): Flow<List<StationEntity>> {
+        return stations
+    }
+
     override suspend fun getStationById(id: String): Flow<StationEntity?> {
-        return flowOf(
+        val cachedStation = stations.value.find { it.id == id }
+        if (cachedStation != null) {
+            return flowOf(cachedStation)
+        }
+        return flow {
             try {
                 val apiStation = apiService.getDeviceByIdentifier(id)
                 val station = StationConverter.toStationEntity(apiStation)
-                Log.d("STATION_DEBUG", "Repository: getStationById fetched id $id: ${station.name}")
-                station
+                emit(station)
             } catch (e: Exception) {
-                Log.e("STATION_DEBUG", "Repository: getStationById failed for id $id", e)
-                null
+                emit(null)
             }
-        )
+        }
     }
 
     override suspend fun updateStationState(id: String, state: DeviceState): Result<StationEntity> {
         return try {
-            val stateMap = mapOf("state" to state.name)
-            val updatedApiStation = apiService.setDeviceState(id, stateMap)
-            val updatedStation = StationConverter.toStationEntity(updatedApiStation)
-            Log.d("STATION_DEBUG", "Repository: updateStationState updated id $id to state $state")
-            Result.success(updatedStation)
+            val stateMap = mapOf("state" to state.name.uppercase())
+            val postResponse = apiService.setDeviceState(id, stateMap)
+
+            if (postResponse.isSuccessful) {
+                val updatedApiStation = apiService.getDeviceByIdentifier(id)
+                val updatedStation = StationConverter.toStationEntity(updatedApiStation)
+                // Update flow
+                val currentList = _stations.value
+                _stations.value = currentList.map { if (it.id == updatedStation.id) updatedStation else it }
+                Result.success(updatedStation)
+            } else {
+                val errorBody = postResponse.errorBody()?.string() ?: "Unknown API error"
+                Result.failure(Exception("Failed to update state (API Error ${postResponse.code()}): $errorBody"))
+            }
         } catch (e: Exception) {
-            Log.e("STATION_DEBUG", "Repository: updateStationState failed for id $id", e)
             Result.failure(e)
         }
     }
 
     override suspend fun updateControlMode(id: String, mode: ControlMode): Result<StationEntity> {
         return try {
-            val modeMap = mapOf("astroman" to mode.name)
-            val updatedApiStation = apiService.setDeviceMode(id, modeMap)
-            val updatedStation = StationConverter.toStationEntity(updatedApiStation)
-            Log.d("STATION_DEBUG", "Repository: updateControlMode updated id $id to mode $mode")
-            Result.success(updatedStation)
+            val modeMap = mapOf("astroman" to mode.name.uppercase())
+            val postResponse = apiService.setDeviceMode(id, modeMap)
+
+            if (postResponse.isSuccessful) {
+                val updatedApiStation = apiService.getDeviceByIdentifier(id)
+                val updatedStation = StationConverter.toStationEntity(updatedApiStation)
+                // Update flow
+                val currentList = _stations.value
+                _stations.value = currentList.map { if (it.id == updatedStation.id) updatedStation else it }
+                Result.success(updatedStation)
+            } else {
+                val errorBody = postResponse.errorBody()?.string() ?: "Unknown API error"
+                Result.failure(Exception("Failed to update mode (API Error ${postResponse.code()}): $errorBody"))
+            }
         } catch (e: Exception) {
-            Log.e("STATION_DEBUG", "Repository: updateControlMode failed for id $id", e)
             Result.failure(e)
         }
     }

@@ -10,8 +10,10 @@ import java.time.format.DateTimeFormatter
 
 object StationConverter {
     fun toStationEntity(apiEntity: ApiStationEntity): StationEntity {
+        val stationId = apiEntity.id ?: throw IllegalArgumentException("API returned station data with a null ID.")
+
         return StationEntity(
-            id = apiEntity.id,
+            id = stationId,
             name = apiEntity.hs ?: "Unknown",
             location = Location(
                 latitude = apiEntity.lat ?: 0.0,
