@@ -193,15 +193,24 @@ class MockStationRepositoryImpl: StationRepository {
             )
         )
     }
-/*
-    companion object {
-        class MockStationApi : StationApi {
-            constructor() {
-                Log.d("STATION_DEBUG", "MockStationApi: Constructor called")
-            }
-        }
+
+    fun getStationSnapshot(id: String): StationEntity {
+        return _stations.value.find { it.id == id } ?: throw Exception("Station not found")
     }
 
- */
-}
+    }
 
+object MockStationRepository : StationRepository {
+
+    private val impl = MockStationRepositoryImpl()
+
+    override fun getAllStations() = impl.getAllStations()
+    override suspend fun getStationById(id: String) = impl.getStationById(id)
+    override suspend fun refreshStations() = impl.refreshStations()
+    override suspend fun updateStationState(id: String, state: DeviceState) = impl.updateStationState(id, state)
+    override suspend fun updateControlMode(id: String, mode: ControlMode) = impl.updateControlMode(id, mode)
+
+    fun getStationSnapshot(id: String): StationEntity {
+        return impl.getStationSnapshot(id)
+    }
+}

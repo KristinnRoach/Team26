@@ -20,13 +20,24 @@
             android:theme="@style/Theme.Team26"
             tools:targetApi="31">
 
+        <receiver
+                android:name=".FirstWidget"
+                android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
 
-       <!-- <meta-data
+            <meta-data
+                    android:name="android.appwidget.provider"
+                    android:resource="@xml/first_widget_info" />
+        </receiver>
+
+        <!--
+         <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="${MAPS_API_KEY}" /> -->
-
+                android:value="${MAPS_API_KEY}" />
+        -->
         <profileable android:shell="true" /> <!-- Added while debugging -->
-
         <activity
                 android:name=".MainActivity"
                 android:exported="true"
@@ -37,7 +48,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
