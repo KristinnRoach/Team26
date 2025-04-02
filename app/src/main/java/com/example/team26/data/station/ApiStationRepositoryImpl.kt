@@ -39,28 +39,39 @@ class ApiStationRepositoryImpl(private val apiService: StationApiService) : Stat
         return try {
             Log.d("STATION_DEBUG", "Repository: Refreshing stations from API...")
             val apiStations = apiService.getAllDevices()
-            val newStations = apiStations.map { StationConverter.toStationEntity(it) }
+            val newStations = apiStations.mapNotNull {
+                try {
+                    StationConverter.toStationEntity(it)
+                } catch (e: IllegalArgumentException) {
+                    Log.e("STATION_DEBUG", "Repository: Error converting station data: ${e.message}")
+                    null // Skip invalid station data
+                }
+            }
+
+            if (apiStations.isNotEmpty() && newStations.isEmpty()) {
+                Log.w("STATION_DEBUG", "Repository: API returned stations, but all failed conversion.")
+            }
+
             _stations.value = newStations
+            Log.d("STATION_DEBUG", "Repository: Refresh successful, ${_stations.value.size} stations loaded.")
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e("STATION_DEBUG", "Repository: Failed to refresh stations", e)
-
             val isConnectivityError = e is ConnectException ||
                     e is UnknownHostException ||
                     e is SocketTimeoutException ||
                     e is HttpException
-
             if (isConnectivityError) {
                 Log.w("STATION_DEBUG", "API connectivity error during refresh. Clearing station cache.")
+                // This clears the station list if API connection is lost (maybe remove?)
                 _stations.value = emptyList()
             }
-
             Result.failure(e)
         }
     }
 
-    override suspend fun refreshStations() {
-        withContext(Dispatchers.IO) {
+    override suspend fun refreshStations(): Result<Unit> {
+        return withContext(Dispatchers.IO) {
             refreshStationsInternal()
         }
     }

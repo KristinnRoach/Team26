@@ -26,6 +26,6 @@ class NotificationPreferenceManager(context: Context) {
 
     // Get all preferences
     fun getAllPreferences(): Map<NotificationPreference, Boolean> {
-        return NotificationPreference.values().associateWith { isPreferenceEnabled(it) }
+        return NotificationPreference.entries.associateWith { isPreferenceEnabled(it) }
     }
 }
