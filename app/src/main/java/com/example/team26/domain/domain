@@ -1,6 +1,0 @@
-Domain packages should include:
-
-* entities (e.g. those stored in PilotAppDb)
-* repository interfaces - (implementations go in data packages)
-* DAO (data access object) interfaces - (implementations go in data packages)
-    - (not necessary to implement dao's at this stage - can use repositories directly)

@@ -45,7 +45,7 @@ class MockStationRepositoryImpl: StationRepository {
         return flowOf(station)
     }
 
-    override suspend fun refreshStations() { // returns Unit (implicit)
+    override suspend fun refreshStations(): Result<Unit> { // returns Unit (implicit)
         // Simulate network delay
         delay(800)
 
@@ -57,6 +57,8 @@ class MockStationRepositoryImpl: StationRepository {
         _stations.value = updatedStations
 
         Log.d("STATION_DEBUG", "Repository: refreshStations called, updating ${stations.value.size} stations")
+
+        return Result.success(Unit)
     }
 
     // Simplified update method:

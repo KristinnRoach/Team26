@@ -1,0 +1,113 @@
+
+// TODO: add user location
+/* import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
+
+@Composable
+fun SimpleMapScreen(
+    modifier: Modifier = Modifier,
+    stationViewModel: StationViewModel
+) {
+    val context = LocalContext.current
+    val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
+    // State for current location
+    var currentLocation by remember { mutableStateOf<LatLng?>(null) }
+
+    // Location callback
+    val locationCallback = remember {
+        object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let { location ->
+                    currentLocation = LatLng(location.latitude, location.longitude)
+                }
+            }
+        }
+    }
+
+    // Permission request
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val locationGranted = permissions.entries.all { it.value }
+        if (locationGranted) {
+            startLocationUpdates(fusedLocationClient, locationCallback)
+        }
+    }
+
+    // Check and request location permissions
+    LaunchedEffect(Unit) {
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                startLocationUpdates(fusedLocationClient, locationCallback)
+            }
+            else -> {
+                permissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }
+        }
+    }
+
+    // Clean up when composable is disposed
+    DisposableEffect(Unit) {
+        onDispose {
+            fusedLocationClient.removeLocationUpdates(locationCallback)
+        }
+    }
+
+    // Your existing GoogleMap composable
+    GoogleMap(
+        modifier = modifier.fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        properties = GoogleMapProperties(isMyLocationEnabled = currentLocation != null)
+    ) {
+        // Your existing markers
+        // ...
+
+        // Optionally add a marker for current location
+        currentLocation?.let { location ->
+            Marker(
+                state = MarkerState(location),
+                title = "My Location",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+            )
+        }
+    }
+}
+
+// Helper function to start location updates
+private fun startLocationUpdates(
+    fusedLocationClient: FusedLocationProviderClient,
+    locationCallback: LocationCallback
+) {
+    try {
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+            .setWaitForAccurateLocation(false)
+            .setMinUpdateIntervalMillis(5000)
+            .build()
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            null
+        )
+    } catch (e: SecurityException) {
+        // Handle exception
+    }
+}
+
+ */
