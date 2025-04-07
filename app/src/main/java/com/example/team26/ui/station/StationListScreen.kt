@@ -1,6 +1,8 @@
 package com.example.team26.ui.station
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -43,6 +45,7 @@ enum class SortOrder(val displayName: String) {
     DESCENDING("Descending")
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun StationListScreen(
     modifier: Modifier = Modifier,

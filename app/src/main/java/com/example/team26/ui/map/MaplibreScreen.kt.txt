@@ -8,30 +8,58 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import dev.sargunv.maplibrecompose.compose.MaplibreMap
-import dev.sargunv.maplibrecompose.compose.rememberCameraState
-import dev.sargunv.maplibrecompose.compose.rememberStyleState
-import dev.sargunv.maplibrecompose.core.GestureSettings
-import dev.sargunv.maplibrecompose.core.OrnamentSettings
-import dev.sargunv.maplibrecompose.material3.controls.AttributionButton
-import dev.sargunv.maplibrecompose.material3.controls.DisappearingCompassButton
-import dev.sargunv.maplibrecompose.material3.controls.DisappearingScaleBar
-import io.github.dellisd.spatialk.geojson.Position
-import dev.sargunv.maplibrecompose.core.CameraPosition
+import androidx.compose.ui.tooling.preview.Preview
+
+// import com.cocoahero.android.geojson.GeoJSON
+// import com.cocoahero.android.geojson.FeatureCollection
+
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.DpOffset
+import com.example.team26.ui.station.StationViewModel
 import com.google.android.gms.location.LocationServices
 import kotlin.time.Duration.Companion.milliseconds
 import com.example.team26.utils.PermissionHandler
 import com.example.team26.utils.getLastLocation
+
+import dev.sargunv.maplibrecompose.compose.MaplibreMap
+import dev.sargunv.maplibrecompose.compose.rememberCameraState
+import dev.sargunv.maplibrecompose.compose.rememberStyleState
+import dev.sargunv.maplibrecompose.compose.ClickResult
+import dev.sargunv.maplibrecompose.compose.layer.CircleLayer
+import dev.sargunv.maplibrecompose.compose.layer.SymbolLayer
+
+import dev.sargunv.maplibrecompose.compose.source.rememberGeoJsonSource
+import dev.sargunv.maplibrecompose.core.source.GeoJsonSource
+
+import dev.sargunv.maplibrecompose.core.GestureSettings
+import dev.sargunv.maplibrecompose.core.OrnamentSettings
+import dev.sargunv.maplibrecompose.core.CameraPosition
+import dev.sargunv.maplibrecompose.core.source.Source
+
+import dev.sargunv.maplibrecompose.material3.controls.AttributionButton
+import dev.sargunv.maplibrecompose.material3.controls.DisappearingCompassButton
+import dev.sargunv.maplibrecompose.material3.controls.DisappearingScaleBar
+
+import dev.sargunv.maplibrecompose.expressions.dsl.Feature.get
+import dev.sargunv.maplibrecompose.expressions.dsl.asString
+import dev.sargunv.maplibrecompose.expressions.dsl.const
+import dev.sargunv.maplibrecompose.expressions.dsl.format
+import dev.sargunv.maplibrecompose.expressions.dsl.image
+import dev.sargunv.maplibrecompose.expressions.dsl.offset
+import dev.sargunv.maplibrecompose.expressions.dsl.span
+import io.github.dellisd.spatialk.geojson.Feature
+import io.github.dellisd.spatialk.geojson.Position
+// import org.jetbrains.compose.resources.painterResource
 
 // When testing on emulator, set useTestLocation to true and provide your test coordinates
 val useTestLocation = true
@@ -39,8 +67,13 @@ val testLatitude = 64.136181 // Gróska
 val testLongitude = -21.946960
 
 @Composable
-fun MaplibreScreen(modifier : Modifier = Modifier, navController : NavHostController) {
+fun MaplibreScreen(modifier : Modifier = Modifier, navController : NavHostController, stationViewModel: StationViewModel) {
 // Use dev.sargunv.maplibrecompose for reference
+
+    // Collect station data as state
+    val allStations by stationViewModel.allStationsUiState.collectAsState()
+    val selectedStationId by stationViewModel.selectedStationId.collectAsState()
+
 
     // Default position (Reykjavik) as fallback
     val defaultPosition = Position(-21.9408, 64.147)
@@ -49,6 +82,7 @@ fun MaplibreScreen(modifier : Modifier = Modifier, navController : NavHostContro
     var userPosition by remember { mutableStateOf(defaultPosition) }
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
+
 
 
     // Create camera state
@@ -62,6 +96,7 @@ fun MaplibreScreen(modifier : Modifier = Modifier, navController : NavHostContro
 
     val camera = rememberCameraState(cameraPosition)
     val styleState = rememberStyleState()
+
 
     // Wrap map in the permission handler
     PermissionHandler(
@@ -115,7 +150,76 @@ fun MaplibreScreen(modifier : Modifier = Modifier, navController : NavHostContro
                             isRotateGesturesEnabled = true,
                             isScrollGesturesEnabled = true,
                         )
-                )
+                ){
+
+                // Add stations via layers
+                allStations.forEachIndexed { index, station ->
+                    // Create a unique source ID for each station
+                    val sourceId = "station-${station.stationId}"
+                    val isSelected = station.stationId == selectedStationId
+
+                    // Create GeoJSON string for this specific station
+                    val stationJson = """
+                        {
+                          "type": "FeatureCollection",
+                          "features": [
+                            {
+                              "type": "Feature",
+                              "properties": {
+                                "id": "${station.stationId}",
+                                "name": "${station.stationName}",
+                                "status": "${station.status}"
+                              },
+                              "geometry": {
+                                "type": "Point",
+                                "coordinates": [${station.longitude.toDouble()}, ${station.latitude.toDouble()}]
+                              }
+                            }
+                          ]
+                        }
+                        """
+
+                    // Create a source for this station
+                    Source(
+                        GeoJsonSource(
+                            id = sourceId,
+                            data = stationJson
+                        )
+                    )
+
+                    // Add a circle for the station
+                    CircleLayer(
+                        id = "circle-$sourceId",
+                        source = source,
+                        circleRadius = const(if (isSelected) 8.dp else 5.dp),
+                        circleColor = const(
+                            when(station.status) {
+                                "ON" -> Color(0xFF00CC00) // Green
+                                "OFF" -> Color(0xFFCC0000) // Red
+                                else -> Color(0xFF888888) // Gray
+                            }
+                        ),
+                        circleStrokeWidth = const(1.dp),
+                        circleStrokeColor = const(Color.White),
+                        onClick = {
+                            stationViewModel.setStationId(station.stationId)
+                            ClickResult.Consume
+                        }
+                    )
+
+                    // Add text label for the station
+                    SymbolLayer(
+                        id = "label-$sourceId",
+                        source = sourceId,
+                        textField = const(station.stationName),
+                        textSize = const(10.dp),
+                        textOffset = const(DpOffset(0.dp, 10.dp)),
+                        textColor = const(Color.Black),
+                        textHaloColor = const(Color.White),
+                        textHaloWidth = const(1.dp)
+                    )
+                }
+            }
 
                 Box(modifier = Modifier.fillMaxSize().padding(8.dp)) {
                     DisappearingScaleBar(
@@ -135,10 +239,13 @@ fun MaplibreScreen(modifier : Modifier = Modifier, navController : NavHostContro
 }
 
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun MaplibreScreenPreview() {
-    MaplibreScreen(navController = NavHostController(LocalContext.current))
+    MaplibreScreen(navController = NavHostController(LocalContext.current), stationViewModel = StationViewModel)
 }
+
+ */
 
 

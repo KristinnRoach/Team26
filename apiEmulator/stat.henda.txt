@@ -1,0 +1,215 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev1",
+        "stationId": "dev1",
+        "stationName": "HS001",
+        "name": "HS001",
+        "status": "ON",
+        "controlMode": "ASTRO",
+        "hverfi": "Mi\u00f0borg",
+        "address": "Laugavegur 12, 101 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T10:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.9426,
+          64.1465
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev2",
+        "stationId": "dev2",
+        "stationName": "HS002",
+        "name": "HS002",
+        "status": "OFF",
+        "controlMode": "MANUAL",
+        "hverfi": "Mi\u00f0borg",
+        "address": "Hverfisgata 5, 101 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T11:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.935,
+          64.147
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev3",
+        "stationId": "dev3",
+        "stationName": "HS003",
+        "name": "HS003",
+        "status": "OFF",
+        "controlMode": "MANUAL",
+        "hverfi": "Mi\u00f0borg",
+        "address": "Sk\u00f3lav\u00f6r\u00f0ust\u00edgur 10, 101 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T12:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.93,
+          64.145
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev4",
+        "stationId": "dev4",
+        "stationName": "HS004",
+        "name": "HS004",
+        "status": "ON",
+        "controlMode": "ASTRO",
+        "hverfi": "Mi\u00f0borg",
+        "address": "Austurstr\u00e6ti 1, 101 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T13:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.94,
+          64.148
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev5",
+        "stationId": "dev5",
+        "stationName": "HS005",
+        "name": "HS005",
+        "status": "OFF",
+        "controlMode": "ASTRO",
+        "hverfi": "Vesturb\u00e6r",
+        "address": "Hringbraut 20, 107 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T14:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.95,
+          64.142
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev6",
+        "stationId": "dev6",
+        "stationName": "HS006",
+        "name": "HS006",
+        "status": "ON",
+        "controlMode": "MANUAL",
+        "hverfi": "Vesturb\u00e6r",
+        "address": "Hofsvallagata 15, 107 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T15:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.96,
+          64.143
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev7",
+        "stationId": "dev7",
+        "stationName": "HS007",
+        "name": "HS007",
+        "status": "OFF",
+        "controlMode": "ASTRO",
+        "hverfi": "Vesturb\u00e6r",
+        "address": "Melhagi 3, 107 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T16:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.955,
+          64.14
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev8",
+        "stationId": "dev8",
+        "stationName": "HS008",
+        "name": "HS008",
+        "status": "ON",
+        "controlMode": "MANUAL",
+        "hverfi": "Brei\u00f0holt",
+        "address": "\u00c1rsk\u00f3gar 10, 109 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T17:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.82,
+          64.108
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev9",
+        "stationId": "dev9",
+        "stationName": "HS009",
+        "name": "HS009",
+        "status": "ON",
+        "controlMode": "ASTRO",
+        "hverfi": "Brei\u00f0holt",
+        "address": "Brei\u00f0holtsbraut 5, 109 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T18:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.83,
+          64.11
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "dev10",
+        "stationId": "dev10",
+        "stationName": "HS010",
+        "name": "HS010",
+        "status": "OFF",
+        "controlMode": "ASTRO",
+        "hverfi": "Brei\u00f0holt",
+        "address": "Seljabraut 7, 109 Reykjav\u00edk",
+        "lastUpdated": "2025-03-05T19:00:00.000"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -21.825,
+          64.105
+        ]
+      }
+    }
+  ]
+}

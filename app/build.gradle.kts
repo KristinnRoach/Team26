@@ -121,15 +121,19 @@ dependencies {
 
     // Location
     implementation(libs.play.services.location)
+    implementation("com.google.maps.android:maps-compose:6.4.1")
 
     // Maps
     implementation(libs.maplibre.compose)
     implementation(libs.maplibre.composeMaterial3)
-//    implementation(libs.maplibre.android.sdk)
-//    implementation(libs.maplibre.composeExtensions)
+    implementation(libs.geojson)
+    implementation(libs.maplibre.android.sdk)
+    implementation(libs.maplibre.android.sdk)
+    implementation(libs.spatialk.geojson)
+
 //    implementation(libs.maplibre.composeGeojson)
+//    implementation(libs.maplibre.composeExtensions) // doesnt work
 //    implementation(libs.maplibre.composeExperimental)
-//    implementation(libs.spatialk.geojson)
 
     // Testing
     testImplementation(libs.junit4)

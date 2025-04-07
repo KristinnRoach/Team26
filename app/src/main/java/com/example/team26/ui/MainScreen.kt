@@ -1,6 +1,8 @@
 package com.example.team26.ui
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import com.example.team26.ui.station.StationListScreen
@@ -48,16 +50,18 @@ import com.example.team26.ui.home.HomeScreen
 import com.example.team26.ui.notifications.NotificationScreen
 import com.example.team26.ui.user.SettingsScreen
 import com.example.team26.navigation.NavItem
-import com.example.team26.ui.map.MaplibreScreen
 import com.example.team26.R
 import com.example.team26.di.AppModule
 import com.example.team26.ui.station.StationViewModel
 import com.example.team26.viewModel.NotificationViewModel
 import com.example.team26.viewModel.viewModelFactory
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.team26.ui.map.SimpleMapScreen
 import com.example.team26.utils.ForegroundStateChecker
 import kotlinx.coroutines.launch
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -84,7 +88,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     )
     val unreadNotificationCount by notificationViewModel.unreadCount.collectAsState()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
 
     val foregroundChecker = remember {
@@ -197,12 +201,15 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 composable("home") { HomeScreen(modifier) }
                 composable("stations") {
                     StationListScreen(
-                        modifier = modifier,
-                        navController = navController,
-                        viewModel = stationViewModel
+                        modifier,
+                        navController,
+                        stationViewModel
                     )
                 }
-                composable("map") { MaplibreScreen(modifier, navController) }
+                // composable("map") { MaplibreScreen(modifier, navController, stationViewModel) }
+                composable("map") {
+                    SimpleMapScreen(modifier, stationViewModel, navController)
+                }
                 composable("notifications") { NotificationScreen(modifier, notificationViewModel) }
                 composable("settings") { SettingsScreen(modifier) }
             }

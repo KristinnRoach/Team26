@@ -1,0 +1,125 @@
+package com.example.team26.ui.map
+
+import android.annotation.SuppressLint
+import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
+import com.example.team26.ui.station.StationViewModel
+
+@SuppressLint("SetJavaScriptEnabled")
+@Composable
+fun LeafletMapScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    stationViewModel: StationViewModel
+) {
+    // Collect station data as state
+    val allStations by stationViewModel.allStationsUiState.collectAsState()
+    val selectedStationId by stationViewModel.selectedStationId.collectAsState()
+
+    // Create markers for stations
+    val stationMarkers = allStations.joinToString("\n") { station ->
+        // Determine marker color based on status
+        val markerColor = when (station.status) {
+            "ON" -> "green"
+            "OFF" -> "red"
+            else -> "gray"
+        }
+
+        // Create marker with popup
+        """
+        const marker_${station.stationId} = L.marker([${station.latitude}, ${station.longitude}], {
+            icon: L.divIcon({
+                className: 'custom-marker',
+                html: '<div style="background-color: ${markerColor}; width: 15px; height: 15px; border-radius: 50%; border: 2px solid white;"></div>',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]
+            })
+        }).addTo(map);
+        
+        marker_${station.stationId}.bindPopup('<b>${station.stationName}</b><br>${station.status}');
+        
+        marker_${station.stationId}.on('click', function() {
+            window.stationClicked('${station.stationId}');
+        });
+        """
+    }
+
+    // HTML content for the map
+    val mapHtml = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <style>
+                body { margin: 0; padding: 0; }
+                #map { width: 100%; height: 100vh; }
+                .custom-marker { }
+            </style>
+        </head>
+        <body>
+            <div id="map"></div>
+            <script>
+                // Initialize map centered on Reykjavik
+                const map = L.map('map').setView([64.14, -21.94], 12);
+                
+                // Add OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Handle station click from JavaScript to Kotlin
+                function stationClicked(stationId) {
+                    // Using Android interface to call back to Kotlin
+                    StationInterface.onStationSelected(stationId);
+                }
+                
+                // Add station markers
+                ${stationMarkers}
+            </script>
+        </body>
+        </html>
+    """
+
+    // WebView for displaying the map
+    AndroidView(
+        modifier = modifier.fillMaxSize(),
+        factory = { context ->
+            WebView(context).apply {
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+
+                // Disable hardware acceleration for this WebView
+                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
+
+                // Rest of your WebView setup...
+                addJavascriptInterface(object {
+                    @android.webkit.JavascriptInterface
+                    fun onStationSelected(stationId: String) {
+                        stationViewModel.setStationId(stationId)
+                    }
+                }, "StationInterface")
+
+                webViewClient = WebViewClient()
+
+                // Load HTML content
+                loadDataWithBaseURL(
+                    "https://openstreetmap.org",
+                    mapHtml,
+                    "text/html",
+                    "UTF-8",
+                    null
+                )
+            }
+        }
+    )
+}

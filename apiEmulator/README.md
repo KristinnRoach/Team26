@@ -25,7 +25,11 @@ The core emulator logic (`intrapi.py`) is derived from the **Gungnir project** b
     ```bash
     python create_db.py
     ```
-4.  **Run Emulator:** Start the Flask server.
+4.  **Create GeoJSON data (Run after create_db):** Execute the script to create geojson data for stations to be used in the map.
+    ```bash
+    python create_geojson.py
+    ```
+5.  **Run Emulator:** Start the Flask server.
     ```bash
     python intrapi.py
     ```
