@@ -1,0 +1,56 @@
+package com.example.team26.ui.map
+
+import androidx.compose.runtime.Composable
+
+@Composable
+fun CustomMapMarker(
+    imageUrl: String?,
+    fullName: String,
+    location: LatLng,
+    onClick: () -> Unit
+) {
+    val markerState = remember { MarkerState(position = location) }
+    val shape = RoundedCornerShape(20.dp, 20.dp, 20.dp, 0.dp)
+    val painter = rememberAsyncImagePainter(
+        ImageRequest.Builder(LocalContext.current)
+            .data(imageUrl)
+            .allowHardware(false)
+            .build()
+    )
+
+    MarkerComposable(
+        keys = arrayOf(fullName, painter.state),
+        state = markerState,
+        title = fullName,
+        anchor = Offset(0.5f, 1f),
+        onClick = {
+            onClick()
+            true
+        }
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(shape)
+                .background(Color.LightGray)
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (!imageUrl.isNullOrEmpty()) {
+                Image(
+                    painter = painter,
+                    contentDescription = "Profile Image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = fullName.take(1).uppercase(),
+                    color = Color.White,
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+    }
+}

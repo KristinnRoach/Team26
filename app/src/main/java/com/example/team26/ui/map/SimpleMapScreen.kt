@@ -29,21 +29,38 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MarkerInfoWindowContent
+import androidx.compose.runtime.DisposableEffect
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import com.example.team26.R
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun SimpleMapScreen(
     modifier: Modifier = Modifier,
     stationViewModel: StationViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    onDestinationChanged: ((String) -> Unit)? = null
 ) {
+    val context = LocalContext.current
+    val defaultPosition = LatLng(64.136181, -21.946960)
+    var currentLocation by remember { mutableStateOf(defaultPosition) }
+    val markerState = remember { MarkerState(currentLocation) }
 
     // Collect station data as state
     val allStations by stationViewModel.allStationsUiState.collectAsState()
@@ -52,7 +69,7 @@ fun SimpleMapScreen(
     // Center map on Reykjavik
     val reykjavik = LatLng(64.14, -21.94)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(reykjavik, 13.5f)
+        position = CameraPosition.fromLatLngZoom(reykjavik, 13f)
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -64,10 +81,11 @@ fun SimpleMapScreen(
         val pos = getLatLng(selected.latitude, selected.longitude)
         // Animate camera to selected station
         cameraPositionState.animate(
-            CameraUpdateFactory.newLatLngZoom(pos, 17f),
-            1000
+            CameraUpdateFactory.newLatLngZoom(pos, 15f),
+            900
         )
     }
+
 
     GoogleMap(
         modifier = modifier.fillMaxSize(),
@@ -80,45 +98,42 @@ fun SimpleMapScreen(
             scrollGesturesEnabledDuringRotateOrZoom = true,
             tiltGesturesEnabled = true,
             compassEnabled = true,
-            myLocationButtonEnabled = true,
+            myLocationButtonEnabled = false,
             mapToolbarEnabled = true,
             rotationGesturesEnabled = true
         ),
         properties = MapProperties(
-            mapType = MapType.TERRAIN, // Or SATELLITE, HYBRID, etc.
-            isTrafficEnabled = true
-            // Todo: create map_style.json in res/raw
+            mapType = MapType.NORMAL,
+            //isMyLocationEnabled = false
+            // isTrafficEnabled = true,
+            // create map_style.json in res/raw:
            // mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
            // LocalContext.current, R.raw.map_style
-
     )
 ) {
+        Marker(
+            state = markerState,
+            title = "My Location",
+            icon = BitmapDescriptorFactory.fromResource(R.drawable.location) //defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
+        )
         // Add markers for all stations
         allStations.forEach { station ->
-            val lat = station.latitude.toDoubleOrNull() ?: 0.0
-            val lng = station.longitude.toDoubleOrNull() ?: 0.0
-            val isSelected = station.stationId == selectedStationId
-
-            val iconColor = when {
-                isSelected -> BitmapDescriptorFactory.HUE_BLUE  // Selected station is blue
-                station.status == "ON" -> BitmapDescriptorFactory.HUE_GREEN
-                station.status == "OFF" -> BitmapDescriptorFactory.HUE_RED
-                else -> BitmapDescriptorFactory.HUE_YELLOW
-            }
-
             MarkerInfoWindowContent(
                 state = MarkerState(getLatLng(station.latitude, station.longitude)),
                 icon = BitmapDescriptorFactory.defaultMarker(
                     when {
-                        station.stationId == selectedStationId -> BitmapDescriptorFactory.HUE_BLUE
                         station.status == "ON" -> BitmapDescriptorFactory.HUE_GREEN
                         station.status == "OFF" -> BitmapDescriptorFactory.HUE_RED
+                        station.stationId == selectedStationId -> BitmapDescriptorFactory.HUE_BLUE
                         else -> BitmapDescriptorFactory.HUE_YELLOW
                     }
                 ),
+                alpha = if (station.stationId == selectedStationId) 1.0f else 0.9f, // not good
+                tag = if (station.stationId == selectedStationId) "selected" else null,
                 onInfoWindowLongClick = {
-                    // todo: move bottom bar to stations, add topbar & back button
-                   //set  previousDestination = "map"
+                    // Update the bottom navigation selection
+                    onDestinationChanged?.invoke("stations")
+                    // Navigate to stations screen
                     navController.navigate("stations") {
                         // clears the back stack up to the map screen
                         popUpTo("map") { inclusive = true }
@@ -130,8 +145,8 @@ fun SimpleMapScreen(
                     stationViewModel.setStationId(station.stationId)
                     coroutineScope.launch {
                         cameraPositionState.animate(
-                            CameraUpdateFactory.newLatLngZoom(getLatLng(station.latitude, station.longitude), 17f),
-                            1000
+                            CameraUpdateFactory.newLatLngZoom(getLatLng(station.latitude, station.longitude), 16.5f),
+                            900
                         )
                     }
                     false // Return false to show the info window
@@ -171,3 +186,16 @@ fun getLatLng(latStr: String, lngStr: String): LatLng {
     val lng = lngStr.toDoubleOrNull() ?: 0.0
     return LatLng(lat, lng)
 }
+
+/* HENDA
+//station.latitude.toDoubleOrNull() ?: 0.0
+// station.longitude.toDoubleOrNull() ?: 0.0
+// val isSelected = station.stationId == selectedStationId
+
+val iconColor = when {
+    isSelected -> BitmapDescriptorFactory.HUE_BLUE  // Selected station is blue
+    station.status == "ON" -> BitmapDescriptorFactory.HUE_GREEN
+    station.status == "OFF" -> BitmapDescriptorFactory.HUE_RED
+    else -> BitmapDescriptorFactory.HUE_YELLOW
+}
+*/

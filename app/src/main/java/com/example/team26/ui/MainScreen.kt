@@ -55,8 +55,6 @@ import com.example.team26.di.AppModule
 import com.example.team26.ui.station.StationViewModel
 import com.example.team26.viewModel.NotificationViewModel
 import com.example.team26.viewModel.viewModelFactory
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.team26.ui.map.SimpleMapScreen
 import com.example.team26.utils.ForegroundStateChecker
 import kotlinx.coroutines.launch
@@ -208,7 +206,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 }
                 // composable("map") { MaplibreScreen(modifier, navController, stationViewModel) }
                 composable("map") {
-                    SimpleMapScreen(modifier, stationViewModel, navController)
+                    SimpleMapScreen(
+                        modifier = modifier, 
+                        stationViewModel = stationViewModel, 
+                        navController = navController,
+                        onDestinationChanged = { newDestination ->
+                            selectedDestination = newDestination
+                        }
+                    )
                 }
                 composable("notifications") { NotificationScreen(modifier, notificationViewModel) }
                 composable("settings") { SettingsScreen(modifier) }
